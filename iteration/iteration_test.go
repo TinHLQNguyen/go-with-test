@@ -5,9 +5,9 @@ import (
 )
 
 // use given-when-then pattern
-func TestRepeat(t *testing.T) {
-	given := Repeat("a")
-	then := "aaaaa"
+func TestRepeatSingle(t *testing.T) {
+	given := Repeat("a", 3)
+	then := "aaa"
 
 	if given != then {
 		t.Errorf("given %q but got %q", given, then)
@@ -16,6 +16,6 @@ func TestRepeat(t *testing.T) {
 
 func BenchmarkRepeat(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		Repeat("a")
+		Repeat("a", 3)
 	}
 }
