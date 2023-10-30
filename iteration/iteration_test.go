@@ -13,6 +13,14 @@ func TestRepeatSingle(t *testing.T) {
 		t.Errorf("given %q but got %q", given, then)
 	}
 }
+func TestRepeatMultiple(t *testing.T) {
+	given := Repeat("ab", 5)
+	then := "ababababab"
+
+	if given != then {
+		t.Errorf("given %q but got %q", given, then)
+	}
+}
 
 func BenchmarkRepeat(b *testing.B) {
 	for i := 0; i < b.N; i++ {
