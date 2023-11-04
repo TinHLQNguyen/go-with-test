@@ -37,10 +37,18 @@ func TestSumAll(t *testing.T) {
 }
 
 func TestSumAllTails(t *testing.T) {
-	when := SumAllTails([]int{1, 2, 4}, []int{0, 9})
-	then := []int{6, 9}
+	t.Run("make tail sums of some slice", func(t *testing.T) {
+		when := SumAllTails([]int{1, 2, 4}, []int{0, 9})
+		then := []int{6, 9}
 
-	assertCorrectSlice(t, when, then)
+		assertCorrectSlice(t, when, then)
+	})
+	t.Run("make tail sums of empty slice", func(t *testing.T) {
+		when := SumAllTails([]int{}, []int{0, 9})
+		then := []int{0, 9}
+
+		assertCorrectSlice(t, when, then)
+	})
 }
 
 func assertCorrectSlice(t testing.TB, when, then []int) {
