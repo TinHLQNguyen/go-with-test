@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 // use given-when-then framework
 func TestSum(t *testing.T) {
@@ -9,6 +11,16 @@ func TestSum(t *testing.T) {
 
 		when := Sum(given)
 		then := 15
+
+		if when != then {
+			t.Errorf("when %d then %d, given %v", when, then, given)
+		}
+	})
+	t.Run("collection of any slice numbers", func(t *testing.T) {
+		given := []int{1, 2, 3}
+
+		when := Sum(given)
+		then := 6
 
 		if when != then {
 			t.Errorf("when %d then %d, given %v", when, then, given)
