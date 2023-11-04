@@ -27,3 +27,12 @@ func TestSum(t *testing.T) {
 		}
 	})
 }
+
+func TestSumAll(t *testing.T) {
+	when := SumAll([]int{1, 2, 4}, []int{0, 9})
+	then := []int{7, 9}
+
+	if when != then {
+		t.Errorf("when %v , then %d", when, then)
+	}
+}
