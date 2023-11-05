@@ -4,7 +4,8 @@ import "testing"
 
 // use given-when-then pattern
 func TestPerimeter(t *testing.T) {
-	when := Perimeter(10.0, 10.0)
+	given := Rectangle{10.0, 10.0}
+	when := Perimeter(given)
 	then := 40.0
 
 	if when != then {
@@ -13,7 +14,8 @@ func TestPerimeter(t *testing.T) {
 }
 
 func TestArea(t *testing.T) {
-	when := Area(10.0, 10.0)
+	given := Rectangle{10.0, 10.0}
+	when := Area(given)
 	then := 100.0
 
 	if when != then {
