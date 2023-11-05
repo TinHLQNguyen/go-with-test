@@ -11,11 +11,20 @@ func assertCorrectValue(t testing.TB, when, then float64) {
 
 // use given-when-then pattern
 func TestPerimeter(t *testing.T) {
-	given := Rectangle{10.0, 10.0}
-	when := Perimeter(given)
-	then := 40.0
+	t.Run("perimeter of a rectangle", func(t *testing.T) {
+		rectange := Rectangle{10.0, 10.0}
+		when := rectange.Perimeter()
+		then := 40.0
 
-	assertCorrectValue(t, when, then)
+		assertCorrectValue(t, when, then)
+	})
+	t.Run("perimeter of a circle", func(t *testing.T) {
+		circle := Circle{5.0}
+		when := circle.Perimeter()
+		then := 31.41592653589793
+
+		assertCorrectValue(t, when, then)
+	})
 }
 
 func TestArea(t *testing.T) {
