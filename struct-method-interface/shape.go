@@ -27,6 +27,7 @@ func (c Circle) Perimeter() float64 {
 	return math.Pi * 2 * c.Radius
 }
 
+// define explicitly the signature helps prevent unwanted stuff got involved
 type Shape interface {
 	Area() float64
 	Perimeter() float64
