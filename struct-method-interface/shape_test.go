@@ -11,3 +11,12 @@ func TestPerimeter(t *testing.T) {
 		t.Errorf("when %.2f then %.2f", when, then)
 	}
 }
+
+func TestArea(t *testing.T) {
+	when := Area(10.0, 10.0)
+	then := 100.0
+
+	if when != then {
+		t.Errorf("when %.2f then %.2f", when, then)
+	}
+}
