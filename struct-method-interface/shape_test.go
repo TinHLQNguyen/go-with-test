@@ -5,7 +5,7 @@ import "testing"
 func assertCorrectValue(t testing.TB, when, then float64) {
 	t.Helper()
 	if when != then {
-		t.Errorf("when %.2f then %.2f", when, then)
+		t.Errorf("when %g then %g", when, then)
 	}
 }
 
@@ -19,9 +19,20 @@ func TestPerimeter(t *testing.T) {
 }
 
 func TestArea(t *testing.T) {
-	given := Rectangle{10.0, 10.0}
-	when := Area(given)
-	then := 100.0
+	t.Run("area of a rectangle", func(t *testing.T) {
+		// given
+		rectange := Rectangle{10.0, 10.0}
+		when := rectange.Area()
+		then := 100.0
 
-	assertCorrectValue(t, when, then)
+		assertCorrectValue(t, when, then)
+	})
+	t.Run("area of a circle", func(t *testing.T) {
+		// given
+		circle := Circle{10.0}
+		when := circle.Area()
+		then := 314.1592653589793
+
+		assertCorrectValue(t, when, then)
+	})
 }
