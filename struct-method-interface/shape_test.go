@@ -31,11 +31,6 @@ func TestPerimeter(t *testing.T) {
 }
 
 func TestArea(t *testing.T) {
-	assertShapeArea := func(t testing.TB, shapeArea ShapeArea, then float64) {
-		t.Helper()
-		when := shapeArea.Area()
-		assertCorrectValue(t, when, then)
-	}
 	areaTests := []struct {
 		name      string
 		shapeArea ShapeArea
@@ -48,8 +43,14 @@ func TestArea(t *testing.T) {
 
 	for _, tt := range areaTests {
 		// define in-loop var to prevent this https://github.com/golang/go/wiki/CommonMistakes#using-reference-to-loop-iterator-variable
-		shape := tt.shapeArea
+		tt := tt
+		shapeArea := tt.shapeArea
 		then := tt.area
-		assertShapeArea(t, shape, then)
+		t.Run(tt.name, func(t *testing.T) {
+			when := shapeArea.Area()
+			if when != then {
+				t.Errorf("%#v when %g then %g", shapeArea, when, then)
+			}
+		})
 	}
 }
