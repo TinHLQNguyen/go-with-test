@@ -27,8 +27,20 @@ func (c Circle) Perimeter() float64 {
 	return math.Pi * 2 * c.Radius
 }
 
+type Triangle struct {
+	Base   float64
+	Height float64
+}
+
+func (t Triangle) Area() float64 {
+	return 0
+}
+
 // define explicitly the signature helps prevent unwanted stuff got involved
 type Shape interface {
 	Area() float64
 	Perimeter() float64
+}
+type ShapeArea interface {
+	Area() float64
 }
