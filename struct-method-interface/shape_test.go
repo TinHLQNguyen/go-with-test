@@ -36,18 +36,18 @@ func TestArea(t *testing.T) {
 		when := shape.Area()
 		assertCorrectValue(t, when, then)
 	}
-	t.Run("area of a rectangle", func(t *testing.T) {
-		// given
-		rectange := Rectangle{10.0, 10.0}
-		then := 100.0
+	areaTests := []struct {
+		shape Shape
+		then  float64
+	}{
+		{Rectangle{10.0, 10.0}, 100.0},
+		{Circle{10.0}, 314.1592653589793},
+	}
 
-		assertShapeArea(t, rectange, then)
-	})
-	t.Run("area of a circle", func(t *testing.T) {
-		// given
-		circle := Circle{10.0}
-		then := 314.1592653589793
-
-		assertShapeArea(t, circle, then)
-	})
+	for _, tt := range areaTests {
+		// define in-loop var to prevent this https://github.com/golang/go/wiki/CommonMistakes#using-reference-to-loop-iterator-variable
+		shape := tt.shape
+		then := tt.then
+		assertShapeArea(t, shape, then)
+	}
 }
