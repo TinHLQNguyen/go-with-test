@@ -33,7 +33,7 @@ type Triangle struct {
 }
 
 func (t Triangle) Area() float64 {
-	return 0
+	return 0.5 * t.Base * t.Height
 }
 
 // define explicitly the signature helps prevent unwanted stuff got involved
