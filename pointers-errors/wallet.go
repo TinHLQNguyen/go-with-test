@@ -1,6 +1,9 @@
 package main
 
-type Wallet struct{}
+type Wallet struct {
+	// lowercase means private
+	balance int
+}
 
 func (w Wallet) Deposit(amount int) {
 
