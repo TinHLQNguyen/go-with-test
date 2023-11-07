@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+var ErrInsufficientFund = errors.New("Don't have enough money, punk!")
+
 // create type from generic one
 type Bitcoin int
 
@@ -23,7 +25,7 @@ func (w *Wallet) Deposit(amount Bitcoin) {
 
 func (w *Wallet) Withdraw(amount Bitcoin) error {
 	if amount > w.balance {
-		return errors.New("Don't have enough money, punk!")
+		return ErrInsufficientFund
 	}
 	w.balance -= amount
 	return nil
