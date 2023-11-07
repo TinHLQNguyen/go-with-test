@@ -11,6 +11,6 @@ func TestWallet(t *testing.T) {
 	then := Bitcoin(10)
 
 	if when != then {
-		t.Errorf("Given %#v when %d then %d", given, when, then)
+		t.Errorf("Given %#v when %s then %s", given, when, then)
 	}
 }
