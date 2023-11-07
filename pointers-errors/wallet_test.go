@@ -10,10 +10,13 @@ func TestWallet(t *testing.T) {
 			t.Errorf("Given %#v when %s then %s", given, when, then)
 		}
 	}
-	assertError := func(t testing.TB, err error) {
+	assertError := func(t testing.TB, when error, then string) {
 		t.Helper()
-		if err == nil {
-			t.Errorf("wanted an error but didn't get")
+		if when == nil {
+			t.Fatal("wanted an error but didn't get")
+		}
+		if when.Error() != then {
+			t.Errorf("when %q then %q", when, then)
 		}
 	}
 	t.Run("deposit", func(t *testing.T) {
@@ -39,7 +42,7 @@ func TestWallet(t *testing.T) {
 		err := given.Withdraw(Bitcoin(100))
 		then := startingBalance
 
-		assertError(t, err)
+		assertError(t, err, "Don't have enough money, punk!")
 		assertBalance(t, given, then)
 	})
 }
