@@ -2,6 +2,23 @@ package main
 
 import "testing"
 
+func TestSearch(t *testing.T) {
+	// given
+	dictionary := Dictionary{"test": "this is a test"}
+	t.Run("known word", func(t *testing.T) {
+		when, _ := dictionary.Search("test")
+		then := "this is a test"
+
+		assertString(t, when, then)
+	})
+	t.Run("unknown word", func(t *testing.T) {
+		_, when := dictionary.Search("unknown")
+		then := ErrNotFound
+
+		assertError(t, when, then)
+	})
+}
+
 func assertString(t testing.TB, when, then string) {
 	t.Helper()
 
@@ -20,30 +37,21 @@ func assertError(t testing.TB, when, then error) {
 	}
 }
 
-func TestSearch(t *testing.T) {
-	// given
-	dictionary := Dictionary{"test": "this is a test"}
-	t.Run("known word", func(t *testing.T) {
-		when, _ := dictionary.Search("test")
-		then := "this is a test"
-
-		assertString(t, when, then)
-	})
-	t.Run("unknown word", func(t *testing.T) {
-		_, when := dictionary.Search("unknown")
-		then := ErrNotFound
-
-		assertError(t, when, then)
-	})
-}
-
 func TestAdd(t *testing.T) {
 	// given
 	dictionary := Dictionary{}
-	dictionary.Add("test", "this is a test")
+	word := "test"
+	definition := "this is a test"
+	dictionary.Add(word, definition)
 
-	when, err := dictionary.Search("test")
-	then := "this is a test"
+	assertDefinition(t, dictionary, word, definition)
+}
+
+func assertDefinition(t testing.TB, dictionary Dictionary, word, definition) {
+	t.Helper()
+
+	when, err := dictionary.Search(word)
+	then := definition
 	if err != nil {
 		t.Fatal("Should find added word", err)
 	}
