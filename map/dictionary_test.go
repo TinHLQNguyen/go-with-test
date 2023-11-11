@@ -51,7 +51,7 @@ func TestUpdate(t *testing.T) {
 		dictionary := Dictionary{word: definition}
 		newDefinition := "new definition"
 
-		dictionary.Update(word, definition)
+		dictionary.Update(word, newDefinition)
 
 		assertDefinition(t, dictionary, word, newDefinition)
 	})
