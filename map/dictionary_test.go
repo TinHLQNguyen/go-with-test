@@ -12,9 +12,9 @@ func assertString(t testing.TB, when, then string) {
 
 func TestSearch(t *testing.T) {
 	// given
-	dictionary := map[string]string{"test": "this is a test"}
+	dictionary := Dictionary{"test": "this is a test"}
 
-	when := Search(dictionary, "test")
+	when := dictionary.Search("test")
 	then := "this is a test"
 
 	assertString(t, when, then)
