@@ -10,6 +10,8 @@ import (
 const (
 	finalWord      = "Go!"
 	countdownStart = 3
+	sleep          = "sleep"
+	write          = "write"
 )
 
 // make a Sleeper interface using Sleep() to add dependency to the behavior
@@ -26,6 +28,21 @@ func (s *SpySleeper) Sleep() {
 	s.Calls++
 }
 
+// This is the mock Sleeper to test operation of write and sleep
+type SpyCountdownOperationSleeper struct {
+	Calls []string
+}
+
+func (s *SpyCountdownOperationSleeper) Sleep() {
+	s.Calls = append(s.Calls, sleep)
+}
+
+func (s *SpyCountdownOperationSleeper) Writer(p []byte) (n int, err error) {
+	s.Calls = append(s.Calls, write)
+	return
+}
+
+// This is the real Sleeper used in the application
 type DefaultSleeper struct{}
 
 func (d *DefaultSleeper) Sleep() {
