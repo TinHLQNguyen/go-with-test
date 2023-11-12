@@ -6,7 +6,7 @@ import (
 )
 
 func TestGreet(t *testing.T) {
-	// technically here, we use another type (buffer) which share the same interface as io
+	// technically here, we use another type in bytes.Buffer which share the same interface io.Writer as os.Stdout
 	buffer := bytes.Buffer{}
 	Greet(&buffer, "Tin")
 
