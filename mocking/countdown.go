@@ -26,14 +26,21 @@ func (s *SpySleeper) Sleep() {
 	s.Calls++
 }
 
-func CountDown(out io.Writer) {
+type DefaultSleeper struct{}
+
+func (d *DefaultSleeper) Sleep() {
+	time.Sleep(1 * time.Second)
+}
+
+func CountDown(out io.Writer, sleeper Sleeper) {
 	for i := countdownStart; i > 0; i-- {
 		fmt.Fprintln(out, i)
-		time.Sleep(1 * time.Second)
+		sleeper.Sleep()
 	}
 	fmt.Fprint(out, finalWord)
 }
 
 func main() {
-	CountDown(os.Stdout)
+	sleeper := &DefaultSleeper{}
+	CountDown(os.Stdout, sleeper)
 }
