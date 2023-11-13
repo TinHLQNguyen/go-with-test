@@ -38,7 +38,7 @@ func (s *SpyCountdownOperationSleeper) Sleep() {
 }
 
 // this function will match Writer interface, which can be called by io.Writer
-func (s *SpyCountdownOperationSleeper) Writer(p []byte) (n int, err error) {
+func (s *SpyCountdownOperationSleeper) Write(p []byte) (n int, err error) {
 	s.Calls = append(s.Calls, write)
 	return
 }
