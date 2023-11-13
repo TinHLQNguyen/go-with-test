@@ -11,7 +11,7 @@ func TestCountdown(t *testing.T) {
 	t.Run("test countdown result", func(t *testing.T) {
 		// given
 		buffer := &bytes.Buffer{}
-		spySlepper := &SpySleeper{}
+		spySlepper := &SpyCountdownOperationSleeper{}
 
 		CountDown(buffer, spySlepper)
 
@@ -23,10 +23,6 @@ Go!`
 
 		if got != want {
 			t.Errorf("got %q want %q", got, want)
-		}
-
-		if spySlepper.Calls != 3 {
-			t.Errorf("not enough calls to sleep")
 		}
 	})
 	t.Run("sleep before next print", func(t *testing.T) {
