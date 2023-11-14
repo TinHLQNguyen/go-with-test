@@ -67,6 +67,6 @@ func CountDown(out io.Writer, sleeper Sleeper) {
 }
 
 func main() {
-	sleeper := &DefaultSleeper{}
+	sleeper := &ConfigurableSleeper{1 * time.Second, time.Sleep}
 	CountDown(os.Stdout, sleeper)
 }
