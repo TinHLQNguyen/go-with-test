@@ -43,12 +43,11 @@ func (d *DefaultSleeper) Sleep() {
 
 type ConfigurableSleeper struct {
 	duration time.Duration
-	// signature of sleep is the same as time.Sleep()
-	sleep func(time.Duration)
+	sleep    func(time.Duration)
 }
 
 func (c *ConfigurableSleeper) Sleep() {
-
+	c.sleep(c.duration)
 }
 
 type SpyTime struct {
