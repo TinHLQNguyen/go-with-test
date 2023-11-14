@@ -19,15 +19,6 @@ type Sleeper interface {
 	Sleep()
 }
 
-// This is the mock Sleeper we use our tests to hasten it
-type SpySleeper struct {
-	Calls int
-}
-
-func (s *SpySleeper) Sleep() {
-	s.Calls++
-}
-
 // This is the mock Sleeper to test operation of write and sleep
 type SpyCountdownOperationSleeper struct {
 	Calls []string
@@ -48,6 +39,24 @@ type DefaultSleeper struct{}
 
 func (d *DefaultSleeper) Sleep() {
 	time.Sleep(1 * time.Second)
+}
+
+type ConfigurableSleeper struct {
+	duration time.Duration
+	// signature of sleep is the same as time.Sleep()
+	sleep func(time.Duration)
+}
+
+func (c *ConfigurableSleeper) Sleep() {
+
+}
+
+type SpyTime struct {
+	durationSlept time.Duration
+}
+
+func (s *SpyTime) Sleep(duration time.Duration) {
+	s.durationSlept = duration
 }
 
 func CountDown(out io.Writer, sleeper Sleeper) {
