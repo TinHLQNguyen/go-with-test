@@ -34,13 +34,7 @@ func (s *SpyCountdownOperationSleeper) Write(p []byte) (n int, err error) {
 	return
 }
 
-// This is the real Sleeper used in the application
-type DefaultSleeper struct{}
-
-func (d *DefaultSleeper) Sleep() {
-	time.Sleep(1 * time.Second)
-}
-
+// Now we use the Configurable Sleeper for both main and mock
 type ConfigurableSleeper struct {
 	duration time.Duration
 	sleep    func(time.Duration)
@@ -50,6 +44,7 @@ func (c *ConfigurableSleeper) Sleep() {
 	c.sleep(c.duration)
 }
 
+// For mocking Configurable Sleeper
 type SpyTime struct {
 	durationSlept time.Duration
 }
