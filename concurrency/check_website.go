@@ -9,6 +9,7 @@ func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
 
 	for _, url := range urls {
 		go func(u string) {
+			// during goroutine, race condition happens here
 			results[u] = wc(u)
 		}(url)
 	}
