@@ -1,15 +1,27 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 )
 
+// This is the requested spec, we respect that for end-user
+var tenSecondsTimeout = 10 * time.Second
+
 func Racer(a, b string) (winner string, err error) {
+	return ConfigurableRacer(a, b, tenSecondsTimeout)
+}
+
+// But we make a flexible Racer for our test to run faster
+func ConfigurableRacer(a, b string, timeout time.Duration) (winner string, err error) {
 	select {
 	case <-ping(a):
 		return a, nil
 	case <-ping(b):
 		return b, nil
+	case <-time.After(timeout):
+		return "", fmt.Errorf("timed out waiting for %s and %s", a, b)
 	}
 }
 
