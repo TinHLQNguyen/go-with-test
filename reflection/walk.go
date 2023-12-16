@@ -10,5 +10,9 @@ func walk(x interface{}, fn func(input string)) {
 		if field.Kind() == reflect.String {
 			fn(field.String())
 		}
+		// run recursively if meet with struct
+		if field.Kind() == reflect.Struct {
+			walk(field.Interface(), fn)
+		}
 	}
 }

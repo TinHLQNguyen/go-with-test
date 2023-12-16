@@ -47,7 +47,7 @@ func TestWalk(t *testing.T) {
 			"struct nested fields",
 			Person{
 				"Christ",
-				Profile{30, "Toyko"},
+				Profile{30, "Tokyo"},
 			},
 			[]string{"Christ", "Tokyo"},
 		},
