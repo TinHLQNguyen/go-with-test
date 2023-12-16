@@ -39,7 +39,7 @@ func TestWalk(t *testing.T) {
 			"struct with non string field",
 			struct {
 				Name string
-				age  int
+				Age  int
 			}{"Christ", 30},
 			[]string{"Christ"},
 		},
