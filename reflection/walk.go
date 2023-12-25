@@ -27,6 +27,11 @@ func walk(x interface{}, fn func(input string)) {
 		for v, ok := val.Recv(); ok; v, ok = val.Recv() {
 			walkValue(v)
 		}
+	case reflect.Func:
+		valFnResutl := val.Call(nil)
+		for _, res := range valFnResutl {
+			walkValue(res)
+		}
 	// in this ease, only 1 string in input
 	case reflect.String:
 		fn(val.String())
