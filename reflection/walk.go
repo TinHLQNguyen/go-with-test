@@ -22,6 +22,11 @@ func walk(x interface{}, fn func(input string)) {
 		for _, key := range val.MapKeys() {
 			walkValue(val.MapIndex(key))
 		}
+	// will iterate until ok is false
+	case reflect.Chan:
+		for v, ok := val.Recv(); ok; v, ok = val.Recv() {
+			walkValue(v)
+		}
 	// in this ease, only 1 string in input
 	case reflect.String:
 		fn(val.String())
