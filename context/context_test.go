@@ -16,8 +16,11 @@ func TestServer(t *testing.T) {
 
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
 
+		// derive new context (Ctx) from original request, get the cancel func along
 		cancellingCtx, cancel := context.WithCancel(request.Context())
+		// schedule cancel func to be called
 		time.AfterFunc(5*time.Millisecond, cancel)
+		// add back this context to request
 		request = request.WithContext(cancellingCtx)
 
 		response := httptest.NewRecorder()
