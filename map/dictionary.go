@@ -1,4 +1,4 @@
-package main
+package mymap
 
 type Dictionary map[string]string
 

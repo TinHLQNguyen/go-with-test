@@ -1,4 +1,4 @@
-package main
+package array-slicing
 
 func Sum(numbers []int) int {
 	sum := 0

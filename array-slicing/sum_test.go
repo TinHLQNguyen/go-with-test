@@ -1,4 +1,4 @@
-package main
+package array-slicing
 
 import (
 	"reflect"
