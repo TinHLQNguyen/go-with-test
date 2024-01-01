@@ -28,8 +28,8 @@ func (s *SpyStore) Fetch(ctx context.Context) (string, error) {
 				time.Sleep(10 * time.Millisecond)
 				result += string(c)
 			}
-			data <- result
 		}
+		data <- result
 	}()
 
 	// This select waits for the goroutine above
