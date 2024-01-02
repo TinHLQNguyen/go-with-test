@@ -2,6 +2,7 @@ package mycontext
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -41,23 +42,25 @@ func (s *SpyStore) Fetch(ctx context.Context) (string, error) {
 	}
 }
 
-// func (s *SpyStore) Cancel() {
-// 	s.cancelled = true
-// }
+// new type to make sure in case of cancellation, no data is written to response
+// to use if for test, must make it compatble with ResponseWriter Interface https://pkg.go.dev/net/http#ResponseWriter
+type SpyResponseWriter struct {
+	written bool
+}
 
-// func (s *SpyStore) assertWasCancelled() {
-// 	s.t.Helper()
-// 	if !s.cancelled {
-// 		s.t.Errorf("store was not told to cancel")
-// 	}
-// }
+func (s *SpyResponseWriter) Header() http.Header {
+	s.written = true
+	return nil
+}
 
-// func (s *SpyStore) assertWasNotCancelled() {
-// 	s.t.Helper()
-// 	if s.cancelled {
-// 		s.t.Errorf("store was told to cancel")
-// 	}
-// }
+func (s *SpyResponseWriter) Write([]byte) (int, error) {
+	s.written = true
+	return 0, errors.New("not implemented")
+}
+
+func (s *SpyResponseWriter) WriteHeader(statuscode int) {
+	s.written = true
+}
 
 func TestServer(t *testing.T) {
 	t.Run("tell store to cancel work if request is cancelled", func(t *testing.T) {
@@ -74,9 +77,13 @@ func TestServer(t *testing.T) {
 		// use this new context for request
 		request = request.WithContext(cancellingCtx)
 
-		response := httptest.NewRecorder()
+		response := &SpyResponseWriter{}
 
 		svr.ServeHTTP(response, request)
+
+		if response.written {
+			t.Errorf("a response should not have been written")
+		}
 
 	})
 	t.Run("return data from store", func(t *testing.T) {
