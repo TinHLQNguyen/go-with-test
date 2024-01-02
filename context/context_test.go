@@ -12,7 +12,6 @@ import (
 
 type SpyStore struct {
 	response string
-	t        *testing.T // can make specific helper function for SpyStore
 }
 
 func (s *SpyStore) Fetch(ctx context.Context) (string, error) {
@@ -65,11 +64,10 @@ func (s *SpyResponseWriter) WriteHeader(statuscode int) {
 func TestServer(t *testing.T) {
 	t.Run("tell store to cancel work if request is cancelled", func(t *testing.T) {
 		data := "Hello, world"
-		store := &SpyStore{response: data, t: t}
+		store := &SpyStore{response: data}
 		svr := Server(store)
 
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
-
 		// derive new context (ctx) from original request, get the cancel func along
 		cancellingCtx, cancel := context.WithCancel(request.Context())
 		// schedule cancel func to be called
@@ -88,7 +86,7 @@ func TestServer(t *testing.T) {
 	})
 	t.Run("return data from store", func(t *testing.T) {
 		data := "Hello, world"
-		store := &SpyStore{response: data, t: t}
+		store := &SpyStore{response: data}
 		svr := Server(store)
 
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
