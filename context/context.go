@@ -14,6 +14,9 @@ type Store interface {
 func Server(store Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data, err := store.Fetch(r.Context())
+		// now Sever doesn't handle cancellation anymore.
+		// it only pass through context
+		// the recepient (Store) needs to handle it
 		if err != nil {
 			log.Println(err)
 			return
