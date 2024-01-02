@@ -6,7 +6,11 @@ func ConvertToRoman(arabic int) string {
 	// https://pkg.go.dev/strings#Builder
 	var result strings.Builder
 
-	for i := 0; i < arabic; i++ {
+	for i := arabic; i > 0; i-- {
+		if i == 4 {
+			result.WriteString("IV")
+			break
+		}
 		result.WriteString("I")
 	}
 
