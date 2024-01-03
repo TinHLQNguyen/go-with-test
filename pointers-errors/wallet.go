@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-var ErrInsufficientFund = errors.New("Don't have enough money, punk!")
+var ErrInsufficientFund = errors.New("don't have enough money, punk")
 
 // create type from generic one
 type Bitcoin int
