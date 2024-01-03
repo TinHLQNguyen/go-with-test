@@ -18,6 +18,31 @@ func ConvertToRoman(arabic int) string {
 	return result.String()
 }
 
+func ConvertToArabic(roman string) int {
+	total := 0
+
+	for i := 0; i < len(roman); i++ {
+		symbol := roman[i]
+		notAtEnd := i+1 < len(roman)
+		// look ahead to next symbol if we can and, the current symbol is base 10 (or other valid subtractors)
+		if notAtEnd && isSubtractiveSymbole(symbol, roman) && allRomanNumerals.IsExist(symbol, roman[i+1]) {
+			// get the value of the two-char string if any
+			value := allRomanNumerals.ValueOf(symbol, roman[i+1])
+			total += value
+			i++ // move past the next char b/c it belong to two-char string
+		} else {
+			total += allRomanNumerals.ValueOf(symbol)
+		}
+	}
+
+	return total
+}
+
+type RomanNumeral struct {
+	Value  int
+	Symbol string
+}
+
 type RomanNumerals []RomanNumeral
 
 func (r RomanNumerals) ValueOf(symbols ...byte) int {
@@ -31,9 +56,15 @@ func (r RomanNumerals) ValueOf(symbols ...byte) int {
 	return 0
 }
 
-type RomanNumeral struct {
-	Value  int
-	Symbol string
+func (r RomanNumerals) IsExist(symbols ...byte) bool {
+	symbol := string(symbols)
+	for _, s := range r {
+		if s.Symbol == symbol {
+			return true
+		}
+	}
+
+	return false
 }
 
 var allRomanNumerals = RomanNumerals{
@@ -52,36 +83,8 @@ var allRomanNumerals = RomanNumerals{
 	{1, "I"},
 }
 
-func ConvertToArabic(roman string) int {
-	total := 0
-
-	for i := 0; i < len(roman); i++ {
-		symbol := roman[i]
-
-		// look ahead to next symbol if we can and, the current symbol is base 10 (or other valid subtractors)
-		if couldBeSubstractive(i, symbol, roman) {
-			nextSymbol := roman[i+1]
-
-			// get the value of the two-char string if any
-			value := allRomanNumerals.ValueOf(symbol, nextSymbol)
-
-			if value != 0 {
-				total += value
-				i++ // move past the next char b/c it belong to two-char string
-			} else {
-				total += allRomanNumerals.ValueOf(symbol) // may not be through for case not 'I'
-			}
-		} else {
-			total += allRomanNumerals.ValueOf(symbol)
-		}
-	}
-
-	return total
-}
-
 // use byte because in Go, index string yields bytes
-func couldBeSubstractive(index int, currentSymbol byte, roman string) bool {
+func isSubtractiveSymbole(currentSymbol byte, roman string) bool {
 	// use '' for byte (char)
-	isSubtractiveSymbole := currentSymbol == 'I' || currentSymbol == 'X' || currentSymbol == 'C'
-	return index+1 < len(roman) && isSubtractiveSymbole
+	return currentSymbol == 'I' || currentSymbol == 'X' || currentSymbol == 'C'
 }
