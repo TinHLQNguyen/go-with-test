@@ -2,27 +2,6 @@ package romanNumeral
 
 import "strings"
 
-type RomanNumeral struct {
-	Value  int
-	Symbol string
-}
-
-var allRomanNumerals = []RomanNumeral{
-	{1000, "M"},
-	{900, "CM"},
-	{500, "D"},
-	{400, "CD"},
-	{100, "C"},
-	{90, "XC"},
-	{50, "L"},
-	{40, "XL"},
-	{10, "X"},
-	{9, "IX"},
-	{5, "V"},
-	{4, "IV"},
-	{1, "I"},
-}
-
 func ConvertToRoman(arabic int) string {
 	// https://pkg.go.dev/strings#Builder
 	var result strings.Builder
@@ -39,10 +18,66 @@ func ConvertToRoman(arabic int) string {
 	return result.String()
 }
 
+type RomanNumerals []RomanNumeral
+
+func (r RomanNumerals) ValueOf(symbol string) int {
+	for _, s := range r {
+		if s.Symbol == symbol {
+			return s.Value
+		}
+	}
+
+	return 0
+}
+
+type RomanNumeral struct {
+	Value  int
+	Symbol string
+}
+
+var allRomanNumerals = RomanNumerals{
+	{1000, "M"},
+	{900, "CM"},
+	{500, "D"},
+	{400, "CD"},
+	{100, "C"},
+	{90, "XC"},
+	{50, "L"},
+	{40, "XL"},
+	{10, "X"},
+	{9, "IX"},
+	{5, "V"},
+	{4, "IV"},
+	{1, "I"},
+}
+
 func ConvertToArabic(roman string) int {
 	total := 0
-	for range roman {
-		total++
+
+	for i := 0; i < len(roman); i++ {
+		symbol := roman[i]
+
+		// look ahead to next symbol if we can and, the current symbol is base 10 (or other valid subtractors)
+		// use '' for byte (char)
+		if i+1 < len(roman) && symbol == 'I' {
+			nextSymbol := roman[i+1]
+
+			// build the two-char string
+			potentialNumber := string([]byte{symbol, nextSymbol})
+
+			// get the value of the two-char string if any
+			value := allRomanNumerals.ValueOf(potentialNumber)
+
+			if value != 0 {
+				total += value
+				i++ // move past the next char b/c it belong to two-char string
+			} else {
+				total++
+			}
+		} else {
+			total++
+		}
 	}
+
 	return total
 }
