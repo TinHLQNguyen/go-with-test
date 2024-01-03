@@ -20,7 +20,8 @@ func ConvertToRoman(arabic int) string {
 
 type RomanNumerals []RomanNumeral
 
-func (r RomanNumerals) ValueOf(symbol string) int {
+func (r RomanNumerals) ValueOf(symbols ...byte) int {
+	symbol := string(symbols)
 	for _, s := range r {
 		if s.Symbol == symbol {
 			return s.Value
@@ -61,11 +62,8 @@ func ConvertToArabic(roman string) int {
 		if couldBeSubstractive(i, symbol, roman) {
 			nextSymbol := roman[i+1]
 
-			// build the two-char string
-			potentialNumber := string([]byte{symbol, nextSymbol})
-
 			// get the value of the two-char string if any
-			value := allRomanNumerals.ValueOf(potentialNumber)
+			value := allRomanNumerals.ValueOf(symbol, nextSymbol)
 
 			if value != 0 {
 				total += value
@@ -74,7 +72,7 @@ func ConvertToArabic(roman string) int {
 				total++ // may not be through for case not 'I'
 			}
 		} else {
-			total += allRomanNumerals.ValueOf(string([]byte{symbol}))
+			total += allRomanNumerals.ValueOf(symbol)
 		}
 	}
 
