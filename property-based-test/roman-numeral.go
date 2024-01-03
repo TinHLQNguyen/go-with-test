@@ -58,8 +58,7 @@ func ConvertToArabic(roman string) int {
 		symbol := roman[i]
 
 		// look ahead to next symbol if we can and, the current symbol is base 10 (or other valid subtractors)
-		// use '' for byte (char)
-		if i+1 < len(roman) && symbol == 'I' {
+		if couldBeSubstractive(i, symbol, roman) {
 			nextSymbol := roman[i+1]
 
 			// build the two-char string
@@ -72,12 +71,18 @@ func ConvertToArabic(roman string) int {
 				total += value
 				i++ // move past the next char b/c it belong to two-char string
 			} else {
-				total++
+				total++ // may not be through for case not 'I'
 			}
 		} else {
-			total++
+			total += allRomanNumerals.ValueOf(string([]byte{symbol}))
 		}
 	}
 
 	return total
+}
+
+// use byte because in Go, index string yields bytes
+func couldBeSubstractive(index int, currentSymbol byte, roman string) bool {
+	// use '' for byte (char)
+	return index+1 < len(roman) && currentSymbol == 'I'
 }
