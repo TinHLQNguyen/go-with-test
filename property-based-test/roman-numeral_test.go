@@ -3,10 +3,11 @@ package romanNumeral
 import (
 	"fmt"
 	"testing"
+	"testing/quick"
 )
 
 var cases = []struct {
-	Arabic int
+	Arabic uint16
 	Roman  string
 }{
 	{1, "I"},
@@ -66,5 +67,23 @@ func TestConvertingToArabic(t *testing.T) {
 				t.Errorf("got %d, want %d", got, want)
 			}
 		})
+	}
+}
+
+func TestPropertiesOfConversion(t *testing.T) {
+	assertion := func(arabic uint16) bool {
+		if arabic > 3999 {
+			return true
+		}
+		t.Log("Testing", arabic)
+		roman := ConvertToRoman(arabic)
+		fromRoman := ConvertToArabic(roman)
+		return fromRoman == arabic
+	}
+
+	if err := quick.Check(assertion, &quick.Config{
+		MaxCount: 1000,
+	}); err != nil {
+		t.Error("failed Check Conversion property", err)
 	}
 }

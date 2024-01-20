@@ -2,7 +2,7 @@ package romanNumeral
 
 import "strings"
 
-func ConvertToRoman(arabic int) string {
+func ConvertToRoman(arabic uint16) string {
 	// https://pkg.go.dev/strings#Builder
 	var result strings.Builder
 
@@ -18,7 +18,7 @@ func ConvertToRoman(arabic int) string {
 	return result.String()
 }
 
-func ConvertToArabic(roman string) (total int) {
+func ConvertToArabic(roman string) (total uint16) {
 	for _, symbol := range windowedRoman(roman).Symbols() {
 		total += allRomanNumerals.ValueOf(symbol...)
 	}
@@ -26,13 +26,13 @@ func ConvertToArabic(roman string) (total int) {
 }
 
 type RomanNumeral struct {
-	Value  int
+	Value  uint16
 	Symbol string
 }
 
 type RomanNumerals []RomanNumeral
 
-func (r RomanNumerals) ValueOf(symbols ...byte) int {
+func (r RomanNumerals) ValueOf(symbols ...byte) uint16 {
 	symbol := string(symbols)
 	for _, s := range r {
 		if s.Symbol == symbol {
