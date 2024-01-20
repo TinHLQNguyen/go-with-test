@@ -18,24 +18,11 @@ func ConvertToRoman(arabic int) string {
 	return result.String()
 }
 
-func ConvertToArabic(roman string) int {
-	total := 0
-
-	for i := 0; i < len(roman); i++ {
-		symbol := roman[i]
-		notAtEnd := i+1 < len(roman)
-		// look ahead to next symbol if we can and, the current symbol is base 10 (or other valid subtractors)
-		if notAtEnd && isSubtractiveSymbole(symbol, roman) && allRomanNumerals.IsExist(symbol, roman[i+1]) {
-			// get the value of the two-char string if any
-			value := allRomanNumerals.ValueOf(symbol, roman[i+1])
-			total += value
-			i++ // move past the next char b/c it belong to two-char string
-		} else {
-			total += allRomanNumerals.ValueOf(symbol)
-		}
+func ConvertToArabic(roman string) (total int) {
+	for _, symbol := range windowedRoman(roman).Symbols() {
+		total += allRomanNumerals.ValueOf(symbol...)
 	}
-
-	return total
+	return
 }
 
 type RomanNumeral struct {
@@ -83,8 +70,28 @@ var allRomanNumerals = RomanNumerals{
 	{1, "I"},
 }
 
+// used to make slice of grouped symbols
+type windowedRoman string
+
+func (w windowedRoman) Symbols() (symbols [][]byte) {
+
+	for i := 0; i < len(w); i++ {
+		symbol := w[i]
+		notAtEnd := i+1 < len(w)
+		// look ahead to next symbol if we can and, the current symbol is base 10 (or other valid subtractors)
+		if notAtEnd && isSubtractive(symbol) && allRomanNumerals.IsExist(symbol, w[i+1]) {
+			// get the value of the two-char string if any
+			symbols = append(symbols, []byte{symbol, w[i+1]})
+			i++ // move past the next char b/c it belong to two-char string
+		} else {
+			symbols = append(symbols, []byte{symbol})
+		}
+	}
+	return
+}
+
 // use byte because in Go, index string yields bytes
-func isSubtractiveSymbole(currentSymbol byte, roman string) bool {
+func isSubtractive(currentSymbol uint8) bool {
 	// use '' for byte (char)
 	return currentSymbol == 'I' || currentSymbol == 'X' || currentSymbol == 'C'
 }
