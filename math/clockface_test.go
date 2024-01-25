@@ -59,6 +59,7 @@ func TestSecondHandPoint(t *testing.T) {
 		point Point
 	}{
 		{simpleTime(0, 0, 30), Point{0, -1}},
+		{simpleTime(0, 0, 45), Point{-1, 0}},
 	}
 
 	for _, c := range cases {
@@ -67,7 +68,7 @@ func TestSecondHandPoint(t *testing.T) {
 			want := c.point
 			got := secondsHandPoint(c.time)
 
-			if got != want {
+			if !roughlyEqualPoint(got, want) {
 				t.Errorf("Got %v, want %v Point", got, want)
 			}
 
@@ -81,4 +82,14 @@ func simpleTime(hours, minutes, seconds int) time.Time {
 
 func testName(t time.Time) string {
 	return t.Format("10:00:05")
+}
+
+func roughlyEqualFloat64(a, b float64) bool {
+	const equalityThreshold = 1e-7
+	return math.Abs(a-b) < equalityThreshold
+}
+
+func roughlyEqualPoint(a, b Point) bool {
+	return roughlyEqualFloat64(a.X, b.X) &&
+		roughlyEqualFloat64(a.Y, b.Y)
 }
