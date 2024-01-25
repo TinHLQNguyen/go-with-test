@@ -53,6 +53,28 @@ func TestSecondsInRadians(t *testing.T) {
 
 }
 
+func TestSecondHandPoint(t *testing.T) {
+	cases := []struct {
+		time  time.Time
+		point Point
+	}{
+		{simpleTime(0, 0, 30), Point{0, -1}},
+	}
+
+	for _, c := range cases {
+		t.Run(testName(c.time), func(t *testing.T) {
+
+			want := c.point
+			got := secondsHandPoint(c.time)
+
+			if got != want {
+				t.Errorf("Got %v, want %v Point", got, want)
+			}
+
+		})
+	}
+}
+
 func simpleTime(hours, minutes, seconds int) time.Time {
 	return time.Date(2024, time.January, 1, hours, minutes, seconds, 0, time.UTC)
 }
