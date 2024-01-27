@@ -20,7 +20,7 @@ func TestSecondHandAt30Seconds(t *testing.T) {
 	tm := time.Date(2024, time.January, 1, 0, 0, 30, 0, time.UTC)
 
 	want := Point{X: 150, Y: 150 + 90}
-	got := SecondHand(tm)
+	got := secondsHandPoint(tm)
 
 	if got != want {
 		t.Errorf("Got %v, want %v", got, want)
