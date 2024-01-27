@@ -29,7 +29,7 @@ func secondHand(w io.Writer, t time.Time) {
 	p = Point{p.X * secondHandLength, p.Y * secondHandLength} // scaling
 	p = Point{p.X, -p.Y}                                      // flip coordinate
 	p = Point{p.X + clockCenterX, p.Y + clockCenterY}         // translate coordinate
-	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%f" y2="%f" style="fill:none;stroke:#f00;stroke-width:3px;"/>`, p.X, p.Y)
+	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#f00;stroke-width:3px;"/>`, p.X, p.Y)
 }
 
 func secondsInRadians(t time.Time) float64 {
