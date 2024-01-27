@@ -1,3 +1,3 @@
-module my-project
+module go-with-test
 
-go 1.21.1
+go 1.21.5
