@@ -28,7 +28,28 @@ func TestSecondsInRadians(t *testing.T) {
 			}
 		})
 	}
+}
 
+func TestMinutesInRadians(t *testing.T) {
+	cases := []struct {
+		time  time.Time
+		angle float64
+	}{
+		{simpleTime(0, 30, 0), math.Pi},
+		{simpleTime(0, 0, 7), (math.Pi / (30 * 60)) * 7},
+	}
+
+	for _, c := range cases {
+		t.Run(testName(c.time), func(t *testing.T) {
+
+			want := c.angle
+			got := minutesInRadians(c.time)
+
+			if got != want {
+				t.Errorf("Got %v, want %v radians", got, want)
+			}
+		})
+	}
 }
 
 func TestSecondHandPoint(t *testing.T) {
