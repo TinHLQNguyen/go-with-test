@@ -20,8 +20,16 @@ func minutesInRadians(t time.Time) float64 {
 }
 
 func secondsHandPoint(t time.Time) Point {
-	angle := secondsInRadians(t)
+	return angleToPoint(secondsInRadians(t))
+}
+
+func minutesHandPoint(t time.Time) Point {
+	return angleToPoint(minutesInRadians(t))
+}
+
+func angleToPoint(angle float64) Point {
 	x := math.Sin(angle)
 	y := math.Cos(angle)
+
 	return Point{x, y}
 }
