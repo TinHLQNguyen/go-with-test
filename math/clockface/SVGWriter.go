@@ -6,11 +6,13 @@ import (
 	"time"
 )
 
-const secondHandLength = 90
-const minuteHandLength = 80
-const hourHandLength = 50
-const clockCenterX = 150
-const clockCenterY = 150
+const (
+	secondHandLength = 90
+	minuteHandLength = 80
+	hourHandLength   = 50
+	clockCenterX     = 150
+	clockCenterY     = 150
+)
 
 func SVGWriter(w io.Writer, t time.Time) {
 	io.WriteString(w, svgStart)
