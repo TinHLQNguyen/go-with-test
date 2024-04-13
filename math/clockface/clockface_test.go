@@ -13,8 +13,8 @@ func TestSecondsInRadians(t *testing.T) {
 	}{
 		{simpleTime(0, 0, 30), math.Pi},
 		{simpleTime(0, 0, 0), 0},
-		{simpleTime(0, 0, 45), (math.Pi / 2) * 3},
-		{simpleTime(0, 0, 7), (math.Pi / 30) * 7},
+		{simpleTime(0, 0, 45), (math.Pi / secondsInHalfClock) * 45},
+		{simpleTime(0, 0, 7), (math.Pi / secondsInHalfClock) * 7},
 	}
 
 	for _, c := range cases {
@@ -59,7 +59,7 @@ func TestMinutesInRadians(t *testing.T) {
 		angle float64
 	}{
 		{simpleTime(0, 30, 0), math.Pi},
-		{simpleTime(0, 0, 7), (math.Pi / (30 * 60)) * 7},
+		{simpleTime(0, 0, 7), (math.Pi / (minutesInHalfClock * secondsInFullClock)) * 7},
 	}
 
 	for _, c := range cases {
@@ -105,8 +105,8 @@ func TestHoursInRadians(t *testing.T) {
 	}{
 		{simpleTime(6, 0, 0), math.Pi},
 		{simpleTime(0, 0, 0), 0},
-		{simpleTime(21, 0, 0), math.Pi * 1.5},
-		{simpleTime(0, 1, 30), math.Pi / ((6 * 60 * 60) / 90)},
+		{simpleTime(21, 0, 0), math.Pi * (21 % hoursInFullClock) / hoursInHalfClock},
+		{simpleTime(0, 1, 30), math.Pi / ((hoursInHalfClock * minutesInFullClock * secondsInFullClock) / 90)},
 	}
 
 	for _, c := range cases {
