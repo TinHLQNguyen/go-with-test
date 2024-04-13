@@ -122,6 +122,29 @@ func TestHoursInRadians(t *testing.T) {
 	}
 }
 
+func TestHourHandPoint(t *testing.T) {
+	cases := []struct {
+		time  time.Time
+		point Point
+	}{
+		{simpleTime(6, 0, 0), Point{0, -1}},
+		{simpleTime(21, 0, 0), Point{-1, 0}},
+	}
+
+	for _, c := range cases {
+		t.Run(testName(c.time), func(t *testing.T) {
+
+			want := c.point
+			got := hoursHandPoint(c.time)
+
+			if !roughlyEqualPoint(got, want) {
+				t.Errorf("Got %v, want %v Point", got, want)
+			}
+
+		})
+	}
+}
+
 func simpleTime(hours, minutes, seconds int) time.Time {
 	jpLocation := time.FixedZone("JST", +9*int(time.Hour/time.Second))
 	return time.Date(2024, time.January, 1, hours, minutes, seconds, 0, jpLocation)
