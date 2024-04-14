@@ -43,7 +43,7 @@ func TestSecondHandPoint(t *testing.T) {
 		t.Run(testName(c.time), func(t *testing.T) {
 
 			want := c.point
-			got := secondsHandPoint(c.time)
+			got := SecondsHandPoint(c.time)
 
 			if !roughlyEqualPoint(got, want) {
 				t.Errorf("Got %v, want %v Point", got, want)
@@ -88,7 +88,7 @@ func TestMinuteHandPoint(t *testing.T) {
 		t.Run(testName(c.time), func(t *testing.T) {
 
 			want := c.point
-			got := minutesHandPoint(c.time)
+			got := MinutesHandPoint(c.time)
 
 			if !roughlyEqualPoint(got, want) {
 				t.Errorf("Got %v, want %v Point", got, want)
@@ -135,7 +135,7 @@ func TestHourHandPoint(t *testing.T) {
 		t.Run(testName(c.time), func(t *testing.T) {
 
 			want := c.point
-			got := hoursHandPoint(c.time)
+			got := HoursHandPoint(c.time)
 
 			if !roughlyEqualPoint(got, want) {
 				t.Errorf("Got %v, want %v Point", got, want)

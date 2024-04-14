@@ -1,7 +1,8 @@
-package clockface
+package svg
 
 import (
 	"fmt"
+	"go-with-test/math/clockface"
 	"io"
 	"time"
 )
@@ -24,24 +25,24 @@ func SVGWriter(w io.Writer, t time.Time) {
 }
 
 func secondHand(w io.Writer, t time.Time) {
-	p := makeHand(secondsHandPoint(t), secondHandLength)
+	p := makeHand(clockface.SecondsHandPoint(t), secondHandLength)
 	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#f00;stroke-width:3px;"/>`, p.X, p.Y)
 }
 
 func minuteHand(w io.Writer, t time.Time) {
-	p := makeHand(minutesHandPoint(t), minuteHandLength)
+	p := makeHand(clockface.MinutesHandPoint(t), minuteHandLength)
 	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#000;stroke-width:3px;"/>`, p.X, p.Y)
 }
 
 func hourHand(w io.Writer, t time.Time) {
-	p := makeHand(hoursHandPoint(t), hourHandLength)
+	p := makeHand(clockface.HoursHandPoint(t), hourHandLength)
 	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#000;stroke-width:3px;"/>`, p.X, p.Y)
 }
 
-func makeHand(p Point, length float64) Point {
-	p = Point{p.X * length, p.Y * length}             // scaling
-	p = Point{p.X, -p.Y}                              // flip coordinate
-	p = Point{p.X + clockCenterX, p.Y + clockCenterY} // translate coordinate
+func makeHand(p clockface.Point, length float64) clockface.Point {
+	p = clockface.Point{X: p.X * length, Y: p.Y * length}             // scaling
+	p = clockface.Point{X: p.X, Y: -p.Y}                              // flip coordinate
+	p = clockface.Point{X: p.X + clockCenterX, Y: p.Y + clockCenterY} // translate coordinate
 	return p
 }
 

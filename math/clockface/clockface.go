@@ -34,15 +34,15 @@ func hoursInRadians(t time.Time) float64 {
 		math.Pi/(hoursInHalfClock/float64(t.Hour()%hoursInFullClock))
 }
 
-func secondsHandPoint(t time.Time) Point {
+func SecondsHandPoint(t time.Time) Point {
 	return angleToPoint(secondsInRadians(t))
 }
 
-func minutesHandPoint(t time.Time) Point {
+func MinutesHandPoint(t time.Time) Point {
 	return angleToPoint(minutesInRadians(t))
 }
 
-func hoursHandPoint(t time.Time) Point {
+func HoursHandPoint(t time.Time) Point {
 	return angleToPoint(hoursInRadians(t))
 }
 

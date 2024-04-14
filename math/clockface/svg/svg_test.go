@@ -1,4 +1,4 @@
-package clockface
+package svg
 
 import (
 	"bytes"
@@ -48,6 +48,7 @@ func TestSGVWriterSecondHand(t *testing.T) {
 			Line{150, 150, 150, 240},
 		},
 	}
+
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
 			b := bytes.Buffer{}
@@ -75,6 +76,7 @@ func TestSGVWriterMinuteHand(t *testing.T) {
 			Line{150, 150, 150, 70},
 		},
 	}
+
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
 			b := bytes.Buffer{}
@@ -102,6 +104,7 @@ func TestSGVWriterHourHand(t *testing.T) {
 			Line{150, 150, 150, 200},
 		},
 	}
+
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
 			b := bytes.Buffer{}
@@ -117,6 +120,15 @@ func TestSGVWriterHourHand(t *testing.T) {
 			}
 		})
 	}
+}
+
+func simpleTime(hours, minutes, seconds int) time.Time {
+	jpLocation := time.FixedZone("JST", +9*int(time.Hour/time.Second))
+	return time.Date(2024, time.January, 1, hours, minutes, seconds, 0, jpLocation)
+}
+
+func testName(t time.Time) string {
+	return t.Format("10:00:05")
 }
 
 func containsLine(l Line, ls []Line) bool {
