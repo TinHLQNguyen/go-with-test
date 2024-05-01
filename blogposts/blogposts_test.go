@@ -10,8 +10,8 @@ import (
 
 func TestNewBlogPosts(t *testing.T) {
 	fs := fstest.MapFS{
-		"hello-word.md":  {Data: []byte("hi")},
-		"hello-word2.md": {Data: []byte("hola")},
+		"hello-word.md":  {Data: []byte("Title: Post 1")},
+		"hello-word2.md": {Data: []byte("Title: Post 2")},
 	}
 
 	posts, err := blogposts.NewPostsFromFS(fs)
@@ -20,11 +20,11 @@ func TestNewBlogPosts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got := len(posts)
-	want := len(fs)
+	got := posts[0]
+	want := blogposts.Post{Title: "Post 1"}
 
 	if got != want {
-		t.Errorf("got %d posts, want %d posts", got, want)
+		t.Errorf("got %+v posts, want %+v posts", got, want)
 	}
 }
 
