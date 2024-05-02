@@ -4,14 +4,22 @@ import (
 	"blogposts"
 	"errors"
 	"io/fs"
+	"reflect"
 	"testing"
 	"testing/fstest"
 )
 
 func TestNewBlogPosts(t *testing.T) {
+	const (
+		firstBody = `Title: Post 1
+Description: Description 1`
+		secondBody = `Title: Post 2
+Description: Description 2`
+	)
+
 	fs := fstest.MapFS{
-		"hello-word.md":  {Data: []byte("Title: Post 1")},
-		"hello-word2.md": {Data: []byte("Title: Post 2")},
+		"hello-word.md":  {Data: []byte(firstBody)},
+		"hello-word2.md": {Data: []byte(secondBody)},
 	}
 
 	posts, err := blogposts.NewPostsFromFS(fs)
@@ -21,11 +29,12 @@ func TestNewBlogPosts(t *testing.T) {
 	}
 
 	got := posts[0]
-	want := blogposts.Post{Title: "Post 1"}
-
-	if got != want {
-		t.Errorf("got %+v posts, want %+v posts", got, want)
+	want := blogposts.Post{
+		Title:       "Post 1",
+		Description: "Description 1",
 	}
+
+	assertPost(t, got, want)
 }
 
 func TestOpenErrorFS(t *testing.T) {
@@ -41,4 +50,11 @@ type StubFailingFS struct {
 
 func (s StubFailingFS) Open(name string) (fs.File, error) {
 	return nil, errors.New("oh no, i always fail")
+}
+
+func assertPost(t *testing.T, got blogposts.Post, want blogposts.Post) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v , want %+v ", got, want)
+	}
 }
