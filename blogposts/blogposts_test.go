@@ -1,8 +1,8 @@
 package blogposts_test
 
 import (
-	"blogposts"
 	"errors"
+	"go-with-test/blogposts"
 	"io/fs"
 	"reflect"
 	"testing"
