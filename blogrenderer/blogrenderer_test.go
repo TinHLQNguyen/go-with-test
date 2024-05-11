@@ -16,7 +16,9 @@ func TestRender(t *testing.T) {
 			Title:       "hello world",
 			Description: "This is a description",
 			Tags:        []string{"go", "tdd"},
-			Body:        "This is a post"}
+			Body: `# First recipe!
+Welcome to my **amazing recipe blog**. 
+I am going to write about stuff`}
 	)
 
 	postRenderer, err := blogrenderer.NewPostRenderer()

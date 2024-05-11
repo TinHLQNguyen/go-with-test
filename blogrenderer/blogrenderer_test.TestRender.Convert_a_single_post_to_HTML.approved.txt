@@ -25,6 +25,11 @@
 
 Tags: <ul><li>go</li><li>tdd</li></ul>
 
+<h1 id="first-recipe">First recipe!</h1>
+
+<p>Welcome to my <strong>amazing recipe blog</strong>.
+I am going to write about stuff</p>
+
 </main>
 <footer>
     <ul>
