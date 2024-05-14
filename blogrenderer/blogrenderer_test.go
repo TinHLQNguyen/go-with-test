@@ -57,3 +57,30 @@ func BenchmarkRender(b *testing.B) {
 		postRenderer.Render(io.Discard, aPost)
 	}
 }
+
+func TestIndex(t *testing.T) {
+
+	t.Run("render index of posts", func(t *testing.T) {
+		buf := bytes.Buffer{}
+		posts := []blogposts.Post{
+			{Title: "Hello world"},
+			{Title: "Hello world 2"},
+		}
+
+		postRenderer, err := blogrenderer.NewPostRenderer()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := postRenderer.RenderIndex(&buf, posts); err != nil {
+			t.Fatal(err)
+		}
+
+		got := buf.String()
+		want := `<ol><li><a href="/post/hello-world">Hello World</a></li><li><a href="/post/hello-world-2">Hello World 2</a></li></ol>`
+
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+	})
+}
