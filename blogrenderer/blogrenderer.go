@@ -5,6 +5,7 @@ import (
 	"go-with-test/blogposts"
 	"html/template"
 	"io"
+	"strings"
 
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
@@ -66,4 +67,23 @@ func mdToHTML(md []byte) []byte {
 	renderer := html.NewRenderer(opts)
 
 	return markdown.Render(doc, renderer)
+}
+
+func (r *PostRenderer) RenderIndex(w io.Writer, posts []blogposts.Post) error {
+	indexTemplate := `<ol>{{range .}}<li><a href="/post/{{sanitiseTitle .Title}}">{{.Title}}</a></li>{{end}}</ol>`
+
+	templ, err := template.New("index").Funcs(template.FuncMap{
+		"sanitiseTitle": func(title string) string {
+			return strings.ToLower(strings.Replace(title, " ", "-", -1))
+		},
+	}).Parse(indexTemplate)
+	if err != nil {
+		return err
+	}
+
+	if err := templ.Execute(w, posts); err != nil {
+		return err
+	}
+
+	return nil
 }
