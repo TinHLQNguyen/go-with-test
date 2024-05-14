@@ -63,8 +63,8 @@ func TestIndex(t *testing.T) {
 	t.Run("render index of posts", func(t *testing.T) {
 		buf := bytes.Buffer{}
 		posts := []blogposts.Post{
-			{Title: "Hello world"},
-			{Title: "Hello world 2"},
+			{Title: "Hello World"},
+			{Title: "Hello World 2"},
 		}
 
 		postRenderer, err := blogrenderer.NewPostRenderer()
@@ -80,7 +80,7 @@ func TestIndex(t *testing.T) {
 		want := `<ol><li><a href="/post/hello-world">Hello World</a></li><li><a href="/post/hello-world-2">Hello World 2</a></li></ol>`
 
 		if got != want {
-			t.Errorf("got %q want %q", got, want)
+			t.Errorf("got %s \n want %s", got, want)
 		}
 	})
 }
