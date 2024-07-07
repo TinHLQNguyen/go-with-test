@@ -12,10 +12,32 @@ import (
 	"github.com/gomarkdown/markdown/parser"
 )
 
-var (
-	//go:embed "templates/*"
-	postTemplates embed.FS
-)
+//go:embed "templates/*"
+var postTemplates embed.FS
+
+// Create a dedicated view model type, such as PostViewModel with exactly the data we need to render
+type PostViewModel struct {
+	Title, SanitisedTitle, Description, Body string
+	Tags                                     []string
+}
+
+func NewPostView(p blogposts.Post) PostViewModel {
+	return PostViewModel{
+		Title:          p.Title,
+		SanitisedTitle: strings.ToLower(strings.ReplaceAll(p.Title, " ", "-")),
+		Description:    p.Description,
+		Body:           p.Body,
+		Tags:           p.Tags,
+	}
+}
+
+func convertPostsToPostViews(posts []blogposts.Post) []PostViewModel {
+	postviews := make([]PostViewModel, len(posts))
+	for i, p := range posts {
+		postviews[i] = NewPostView(p)
+	}
+	return postviews
+}
 
 func Render(w io.Writer, p blogposts.Post) error {
 	templ, err := template.ParseFS(postTemplates, "templates/*.gohtml")
@@ -23,7 +45,8 @@ func Render(w io.Writer, p blogposts.Post) error {
 		return err
 	}
 
-	if err := templ.ExecuteTemplate(w, "blog.gohtml", p); err != nil {
+	pv := NewPostView(p)
+	if err := templ.ExecuteTemplate(w, "blog.gohtml", pv); err != nil {
 		return err
 	}
 
@@ -45,10 +68,11 @@ func NewPostRenderer() (*PostRenderer, error) {
 
 func (r *PostRenderer) Render(w io.Writer, p blogposts.Post) error {
 	htmlBody := template.HTML(string(mdToHTML([]byte(p.Body))))
+	pv := NewPostView(p)
 	if err := r.templ.ExecuteTemplate(w, "blog.gohtml", struct {
-		P        blogposts.Post
+		P        PostViewModel
 		HtmlBody template.HTML
-	}{P: p, HtmlBody: htmlBody}); err != nil {
+	}{P: pv, HtmlBody: htmlBody}); err != nil {
 		return err
 	}
 
@@ -70,18 +94,15 @@ func mdToHTML(md []byte) []byte {
 }
 
 func (r *PostRenderer) RenderIndex(w io.Writer, posts []blogposts.Post) error {
-	indexTemplate := `<ol>{{range .}}<li><a href="/post/{{sanitiseTitle .Title}}">{{.Title}}</a></li>{{end}}</ol>`
+	indexTemplate := `<ol>{{range .}}<li><a href="/post/{{.SanitisedTitle}}">{{.Title}}</a></li>{{end}}</ol>`
 
-	templ, err := template.New("index").Funcs(template.FuncMap{
-		"sanitiseTitle": func(title string) string {
-			return strings.ToLower(strings.Replace(title, " ", "-", -1))
-		},
-	}).Parse(indexTemplate)
+	pviews := convertPostsToPostViews(posts)
+	templ, err := template.New("index").Parse(indexTemplate)
 	if err != nil {
 		return err
 	}
 
-	if err := templ.Execute(w, posts); err != nil {
+	if err := templ.Execute(w, pviews); err != nil {
 		return err
 	}
 

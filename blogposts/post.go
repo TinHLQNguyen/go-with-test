@@ -37,7 +37,8 @@ func newPost(postFile io.Reader) (Post, error) {
 		return Post{}, err
 	}
 
-	post := Post{Title: titleLine,
+	post := Post{
+		Title:       titleLine,
 		Description: descriptionLine,
 		Tags:        tagsLine,
 		Body:        body,
