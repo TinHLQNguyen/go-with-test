@@ -15,46 +15,37 @@ import (
 //go:embed "templates/*"
 var postTemplates embed.FS
 
-// Create a dedicated view model type, such as PostViewModel with exactly the data we need to render
-type PostViewModel struct {
+// Create a dedicated view model type, such as postViewModel with exactly the data we need to render
+type postViewModel struct {
 	Title, SanitisedTitle, Description, Body string
 	Tags                                     []string
+	HtmlBody                                 template.HTML
 }
 
-func NewPostView(p blogposts.Post) PostViewModel {
-	return PostViewModel{
+func newPostView(p blogposts.Post, r *PostRenderer) postViewModel {
+	htmlBody := template.HTML(markdown.ToHTML([]byte(p.Body), r.mdParser, r.mdRenderer))
+	return postViewModel{
 		Title:          p.Title,
 		SanitisedTitle: strings.ToLower(strings.ReplaceAll(p.Title, " ", "-")),
 		Description:    p.Description,
 		Body:           p.Body,
 		Tags:           p.Tags,
+		HtmlBody:       htmlBody,
 	}
 }
 
-func convertPostsToPostViews(posts []blogposts.Post) []PostViewModel {
-	postviews := make([]PostViewModel, len(posts))
+func convertPostsToPostViews(posts []blogposts.Post, r *PostRenderer) []postViewModel {
+	postviews := make([]postViewModel, len(posts))
 	for i, p := range posts {
-		postviews[i] = NewPostView(p)
+		postviews[i] = newPostView(p, r)
 	}
 	return postviews
 }
 
-func Render(w io.Writer, p blogposts.Post) error {
-	templ, err := template.ParseFS(postTemplates, "templates/*.gohtml")
-	if err != nil {
-		return err
-	}
-
-	pv := NewPostView(p)
-	if err := templ.ExecuteTemplate(w, "blog.gohtml", pv); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 type PostRenderer struct {
-	templ *template.Template
+	templ      *template.Template
+	mdParser   *parser.Parser
+	mdRenderer *html.Renderer
 }
 
 func NewPostRenderer() (*PostRenderer, error) {
@@ -63,38 +54,24 @@ func NewPostRenderer() (*PostRenderer, error) {
 		return nil, err
 	}
 
-	return &PostRenderer{templ: templ}, nil
-}
-
-func (r *PostRenderer) Render(w io.Writer, p blogposts.Post) error {
-	htmlBody := template.HTML(string(mdToHTML([]byte(p.Body))))
-	pv := NewPostView(p)
-	if err := r.templ.ExecuteTemplate(w, "blog.gohtml", struct {
-		P        PostViewModel
-		HtmlBody template.HTML
-	}{P: pv, HtmlBody: htmlBody}); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func mdToHTML(md []byte) []byte {
 	// create markdown parser with extensions
 	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock
 	p := parser.NewWithExtensions(extensions)
-	doc := p.Parse(md)
 
 	// create HTML renderer with extensions
 	htmlFlags := html.CommonFlags | html.HrefTargetBlank
 	opts := html.RendererOptions{Flags: htmlFlags}
-	renderer := html.NewRenderer(opts)
+	r := html.NewRenderer(opts)
 
-	return markdown.Render(doc, renderer)
+	return &PostRenderer{templ: templ, mdParser: p, mdRenderer: r}, nil
+}
+
+func (r *PostRenderer) Render(w io.Writer, p blogposts.Post) error {
+	pv := newPostView(p, r)
+	return r.templ.ExecuteTemplate(w, "blog.gohtml", pv)
 }
 
 func (r *PostRenderer) RenderIndex(w io.Writer, posts []blogposts.Post) error {
-	pviews := convertPostsToPostViews(posts)
-
+	pviews := convertPostsToPostViews(posts, r)
 	return r.templ.ExecuteTemplate(w, "index.gohtml", pviews)
 }

@@ -1,8 +1,8 @@
 {{template "top" .}}
-<h1>{{.P.Title}}</h1>
+<h1>{{.Title}}</h1>
 
-<p>{{.P.Description}}</p>
+<p>{{.Description}}</p>
 
-Tags: <ul>{{range .P.Tags}}<li>{{.}}</li>{{end}}</ul>
+Tags: <ul>{{range .Tags}}<li>{{.}}</li>{{end}}</ul>
 
 {{.HtmlBody}}{{template "bottom" .}}
