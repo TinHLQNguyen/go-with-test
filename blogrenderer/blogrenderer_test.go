@@ -11,15 +11,14 @@ import (
 )
 
 func TestRender(t *testing.T) {
-	var (
-		aPost = blogposts.Post{
-			Title:       "hello world",
-			Description: "This is a description",
-			Tags:        []string{"go", "tdd"},
-			Body: `# First recipe!
+	aPost := blogposts.Post{
+		Title:       "hello world",
+		Description: "This is a description",
+		Tags:        []string{"go", "tdd"},
+		Body: `# First recipe!
 Welcome to my **amazing recipe blog**. 
-I am going to write about stuff`}
-	)
+I am going to write about stuff`,
+	}
 
 	postRenderer, err := blogrenderer.NewPostRenderer()
 	if err != nil {
@@ -39,13 +38,12 @@ I am going to write about stuff`}
 }
 
 func BenchmarkRender(b *testing.B) {
-	var (
-		aPost = blogposts.Post{
-			Title:       "hello world",
-			Description: "This is a description",
-			Tags:        []string{"go", "tdd"},
-			Body:        "This is a post"}
-	)
+	aPost := blogposts.Post{
+		Title:       "hello world",
+		Description: "This is a description",
+		Tags:        []string{"go", "tdd"},
+		Body:        "This is a post",
+	}
 
 	postRenderer, err := blogrenderer.NewPostRenderer()
 	if err != nil {
@@ -59,7 +57,6 @@ func BenchmarkRender(b *testing.B) {
 }
 
 func TestIndex(t *testing.T) {
-
 	t.Run("render index of posts", func(t *testing.T) {
 		buf := bytes.Buffer{}
 		posts := []blogposts.Post{
@@ -77,10 +74,6 @@ func TestIndex(t *testing.T) {
 		}
 
 		got := buf.String()
-		want := `<ol><li><a href="/post/hello-world">Hello World</a></li><li><a href="/post/hello-world-2">Hello World 2</a></li></ol>`
-
-		if got != want {
-			t.Errorf("got %s \n want %s", got, want)
-		}
+		approvals.VerifyString(t, got)
 	})
 }

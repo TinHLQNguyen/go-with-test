@@ -94,17 +94,7 @@ func mdToHTML(md []byte) []byte {
 }
 
 func (r *PostRenderer) RenderIndex(w io.Writer, posts []blogposts.Post) error {
-	indexTemplate := `<ol>{{range .}}<li><a href="/post/{{.SanitisedTitle}}">{{.Title}}</a></li>{{end}}</ol>`
-
 	pviews := convertPostsToPostViews(posts)
-	templ, err := template.New("index").Parse(indexTemplate)
-	if err != nil {
-		return err
-	}
 
-	if err := templ.Execute(w, pviews); err != nil {
-		return err
-	}
-
-	return nil
+	return r.templ.ExecuteTemplate(w, "index.gohtml", pviews)
 }
