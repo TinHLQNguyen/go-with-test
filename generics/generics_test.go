@@ -14,16 +14,17 @@ func TestAssertFunctions(t *testing.T) {
 	// AssertEqual(t, 1, "1") // This should not be allowed
 }
 
-func AssertEqual(t *testing.T, got, want interface{}) {
+// comparable type parameter indicates that we only accept things that are comparable
+func AssertEqual[T comparable](t *testing.T, got, want T) {
 	t.Helper()
 	if got != want {
-		t.Errorf("GOT %d, WANT %d", got, want)
+		t.Errorf("GOT %v, WANT %v", got, want)
 	}
 }
 
-func AssertNotEqual(t *testing.T, got, want interface{}) {
+func AssertNotEqual[T comparable](t *testing.T, got, want T) {
 	t.Helper()
 	if got == want {
-		t.Errorf("GOT %d, NOT WANT %d", got, want)
+		t.Errorf("GOT %v, NOT WANT %v", got, want)
 	}
 }
