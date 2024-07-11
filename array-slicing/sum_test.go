@@ -61,9 +61,32 @@ func TestSumAllTails(t *testing.T) {
 	})
 }
 
+func TestReduce(t *testing.T) {
+	t.Run("multiplication of all elements", func(t *testing.T) {
+		multiply := func(x, y int) int {
+			return x * y
+		}
+		AssertEqual(t, Reduce([]int{1, 2, 3}, multiply, 1), 6)
+	})
+
+	t.Run("concatenate strings", func(t *testing.T) {
+		concat := func(a, b string) string {
+			return a + b
+		}
+		AssertEqual(t, Reduce([]string{"a", "b", "c"}, concat, ""), "abc")
+	})
+}
+
 func assertCorrectSlice(t testing.TB, when, then []int) {
 	t.Helper()
 	if !reflect.DeepEqual(when, then) {
 		t.Errorf("when %v , then %v", when, then)
+	}
+}
+
+func AssertEqual[T comparable](t *testing.T, got, want T) {
+	t.Helper()
+	if got != want {
+		t.Errorf("GOT %v, WANT %v", got, want)
 	}
 }
