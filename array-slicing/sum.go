@@ -28,11 +28,3 @@ func SumAllTails(numbersToSumTails ...[]int) []int {
 	}
 	return Reduce(numbersToSumTails, sumTail, []int{})
 }
-
-func Reduce[A any](collection []A, accumulator func(A, A) A, initValue A) A {
-	result := initValue
-	for _, x := range collection {
-		result = accumulator(result, x)
-	}
-	return result
-}
