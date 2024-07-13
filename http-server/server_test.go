@@ -12,6 +12,7 @@ func TestGetPlayers(t *testing.T) {
 		map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
+			"Loser":  0,
 		},
 	}
 	server := &PlayerServer{store: &store}
@@ -29,8 +30,8 @@ func TestGetPlayers(t *testing.T) {
 		AssertEqual(t, response.Body.String(), "20")
 	})
 
-	t.Run("Return Floyd's score", func(t *testing.T) {
-		request := newGetScoreRequest("Floyd")
+	t.Run("Return Loser's 0 score", func(t *testing.T) {
+		request := newGetScoreRequest("Loser")
 		// mock with a spy built in
 		response := httptest.NewRecorder()
 
@@ -39,7 +40,7 @@ func TestGetPlayers(t *testing.T) {
 		// assert status code
 		AssertEqual(t, response.Code, http.StatusOK)
 		// assert response body
-		AssertEqual(t, response.Body.String(), "10")
+		AssertEqual(t, response.Body.String(), "0")
 	})
 
 	t.Run("Return 404 on missing player", func(t *testing.T) {
@@ -64,6 +65,7 @@ type StubPlayerStore struct {
 	scores map[string]int
 }
 
-func (s *StubPlayerStore) GetPlayerScore(name string) int {
-	return s.scores[name]
+func (s *StubPlayerStore) GetPlayerScore(name string) (int, bool) {
+	score, ok := s.scores[name]
+	return score, ok
 }
