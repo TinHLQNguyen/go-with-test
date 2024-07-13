@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -8,29 +9,27 @@ import (
 
 func TestGetPlayers(t *testing.T) {
 	t.Run("Return Pepper's score", func(t *testing.T) {
-		// the request we'll send to test
-		request, _ := http.NewRequest(http.MethodGet, "/players/Pepper", nil)
+		request := newGetScoreRequest("Pepper")
 		// mock with a spy built in
 		response := httptest.NewRecorder()
 
 		PlayerServer(response, request)
 
-		got := response.Body.String()
-		want := "20"
-
-		AssertEqual(t, got, want)
+		AssertEqual(t, response.Body.String(), "20")
 	})
 	t.Run("Return Floyd's score", func(t *testing.T) {
-		// the request we'll send to test
-		request, _ := http.NewRequest(http.MethodGet, "/players/Floyd", nil)
+		request := newGetScoreRequest("Floyd")
 		// mock with a spy built in
 		response := httptest.NewRecorder()
 
 		PlayerServer(response, request)
 
-		got := response.Body.String()
-		want := "10"
-
-		AssertEqual(t, got, want)
+		AssertEqual(t, response.Body.String(), "10")
 	})
+}
+
+func newGetScoreRequest(name string) (request *http.Request) {
+	// the request we'll send to test
+	request, _ = http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", name), nil)
+	return request
 }
