@@ -6,6 +6,9 @@ import (
 	"strings"
 )
 
+// TODO allow concurrency POST & GET with mutex
+// TODO implement a real database playerstorage
+
 type PlayerServer struct {
 	store PlayerStore
 }
