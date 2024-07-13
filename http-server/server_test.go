@@ -23,6 +23,9 @@ func TestGetPlayers(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
+		// assert status code
+		AssertEqual(t, response.Code, http.StatusOK)
+		// assert response body
 		AssertEqual(t, response.Body.String(), "20")
 	})
 
@@ -33,7 +36,20 @@ func TestGetPlayers(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
+		// assert status code
+		AssertEqual(t, response.Code, http.StatusOK)
+		// assert response body
 		AssertEqual(t, response.Body.String(), "10")
+	})
+
+	t.Run("Return 404 on missing player", func(t *testing.T) {
+		request := newGetScoreRequest("SomeGuy")
+		// mock with a spy built in
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		AssertEqual(t, response.Code, http.StatusNotFound)
 	})
 }
 

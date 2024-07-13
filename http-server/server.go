@@ -13,6 +13,9 @@ type PlayerServer struct {
 // Implement Handler interface for PlayerServer
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
+
+	w.WriteHeader(http.StatusNotFound)
+
 	fmt.Fprint(w, p.store.GetPlayerScore(player))
 }
 
