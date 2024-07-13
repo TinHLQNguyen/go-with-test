@@ -14,6 +14,7 @@ func TestGetPlayers(t *testing.T) {
 			"Floyd":  10,
 			"Loser":  0,
 		},
+		[]string{},
 	}
 	server := &PlayerServer{store: &store}
 
@@ -57,6 +58,7 @@ func TestGetPlayers(t *testing.T) {
 func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{},
+		[]string{},
 	}
 	server := &PlayerServer{store: &store}
 
@@ -67,6 +69,10 @@ func TestStoreWins(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		AssertEqual(t, response.Code, http.StatusAccepted)
+
+		if len(store.winCalls) != 1 {
+			t.Errorf("got %d calls to RecordWin, want %d", len(store.winCalls), 1)
+		}
 	})
 }
 
@@ -78,10 +84,16 @@ func newGetScoreRequest(name string) (request *http.Request) {
 
 // stub for test, following PlayerStore Interface
 type StubPlayerStore struct {
-	scores map[string]int
+	scores   map[string]int
+	winCalls []string
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) (int, bool) {
 	score, ok := s.scores[name]
 	return score, ok
+}
+
+// spy on POST calls
+func (s *StubPlayerStore) RecordWin(name string) {
+	s.winCalls = append(s.winCalls, name)
 }

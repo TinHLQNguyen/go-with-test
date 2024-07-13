@@ -22,6 +22,7 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (p *PlayerServer) processWin(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusAccepted)
+	p.store.RecordWin("randomGuy")
 }
 
 func (p *PlayerServer) showScore(w http.ResponseWriter, r *http.Request) {
@@ -37,4 +38,5 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, r *http.Request) {
 
 type PlayerStore interface {
 	GetPlayerScore(string) (int, bool)
+	RecordWin(string)
 }
