@@ -20,4 +20,17 @@ func TestGetPlayers(t *testing.T) {
 
 		AssertEqual(t, got, want)
 	})
+	t.Run("Return Floyd's score", func(t *testing.T) {
+		// the request we'll send to test
+		request, _ := http.NewRequest(http.MethodGet, "/players/Floyd", nil)
+		// mock with a spy built in
+		response := httptest.NewRecorder()
+
+		PlayerServer(response, request)
+
+		got := response.Body.String()
+		want := "10"
+
+		AssertEqual(t, got, want)
+	})
 }
