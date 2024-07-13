@@ -83,10 +83,3 @@ func assertCorrectSlice(t testing.TB, when, then []int) {
 		t.Errorf("when %v , then %v", when, then)
 	}
 }
-
-func AssertEqual[T comparable](t *testing.T, got, want T) {
-	t.Helper()
-	if got != want {
-		t.Errorf("GOT %v, WANT %v", got, want)
-	}
-}
