@@ -9,19 +9,34 @@ import (
 // TODO allow concurrency POST & GET with mutex
 // TODO implement a real database playerstorage
 
+type PlayerStore interface {
+	GetPlayerScore(string) (int, bool)
+	RecordWin(string)
+}
+
 type PlayerServer struct {
 	store PlayerStore
 }
 
 // Implement Handler interface for PlayerServer
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	player := strings.TrimPrefix(r.URL.Path, "/players/")
-	switch r.Method {
-	case http.MethodPost:
-		p.processWin(w, player)
-	case http.MethodGet:
-		p.showScore(w, player)
-	}
+	router := http.NewServeMux()
+
+	router.Handle("/league", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	router.Handle("/players/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		player := strings.TrimPrefix(r.URL.Path, "/players/")
+		switch r.Method {
+		case http.MethodPost:
+			p.processWin(w, player)
+		case http.MethodGet:
+			p.showScore(w, player)
+		}
+	}))
+
+	router.ServeHTTP(w, r)
 }
 
 func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
@@ -36,9 +51,4 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
 	}
 
 	fmt.Fprint(w, score)
-}
-
-type PlayerStore interface {
-	GetPlayerScore(string) (int, bool)
-	RecordWin(string)
 }

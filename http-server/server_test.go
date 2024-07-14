@@ -62,10 +62,7 @@ func newGetScoreRequest(name string) (request *http.Request) {
 }
 
 func TestStoreWins(t *testing.T) {
-	store := StubPlayerStore{
-		map[string]int{},
-		[]string{},
-	}
+	store := StubPlayerStore{}
 	server := &PlayerServer{store: &store}
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
@@ -90,6 +87,21 @@ func TestStoreWins(t *testing.T) {
 func newPostWinRequest(name string) (request *http.Request) {
 	request, _ = http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
 	return request
+}
+
+func TestLeague(t *testing.T) {
+	store := StubPlayerStore{}
+	server := &PlayerServer{&store}
+
+	t.Run("it returns StatusOK 200 on /league", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		// assert status code
+		AssertEqual(t, response.Code, http.StatusOK)
+	})
 }
 
 // stub for test, following PlayerStore Interface
