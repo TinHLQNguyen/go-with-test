@@ -8,15 +8,14 @@ import (
 )
 
 func TestGetPlayers(t *testing.T) {
-	store := StubPlayerStore{
+	store := newStubPlayerStore(
 		map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
 			"Loser":  0,
 		},
-		[]string{},
-	}
-	server := &PlayerServer{store: &store}
+		[]string{})
+	server := NewPlayerServer(store)
 
 	t.Run("Return Pepper's score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -62,8 +61,8 @@ func newGetScoreRequest(name string) (request *http.Request) {
 }
 
 func TestStoreWins(t *testing.T) {
-	store := StubPlayerStore{}
-	server := &PlayerServer{store: &store}
+	store := newStubPlayerStore(nil, nil)
+	server := NewPlayerServer(store)
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
 		player := "Pepper"
@@ -90,8 +89,8 @@ func newPostWinRequest(name string) (request *http.Request) {
 }
 
 func TestLeague(t *testing.T) {
-	store := StubPlayerStore{}
-	server := &PlayerServer{&store}
+	store := newStubPlayerStore(nil, nil)
+	server := NewPlayerServer(store)
 
 	t.Run("it returns StatusOK 200 on /league", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
@@ -108,6 +107,10 @@ func TestLeague(t *testing.T) {
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
+}
+
+func newStubPlayerStore(score map[string]int, winCalls []string) *StubPlayerStore {
+	return &StubPlayerStore{score, winCalls}
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) (int, bool) {
