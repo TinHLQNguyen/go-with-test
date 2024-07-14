@@ -4,7 +4,6 @@ func NewInMemoryPlayerStore() *InMemoryPlayerStore {
 	return &InMemoryPlayerStore{map[string]int{}}
 }
 
-// kept empty and hard-coded response until one is implemented
 type InMemoryPlayerStore struct {
 	store map[string]int
 }
