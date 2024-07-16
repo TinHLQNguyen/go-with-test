@@ -110,7 +110,7 @@ func TestLeague(t *testing.T) {
 		got := getLeagueFromResponse(t, response.Body)
 		// assert status code
 		AssertEqual(t, response.Code, http.StatusOK)
-		AssertLeague(t, got, wantedLeague)
+		assertLeague(t, got, wantedLeague)
 
 		assertContentType(t, response, "application/json")
 	})
@@ -136,7 +136,7 @@ func getLeagueFromResponse(t testing.TB, body io.Reader) (league []Player) {
 	return league
 }
 
-func AssertLeague(t testing.TB, got, want []Player) {
+func assertLeague(t testing.TB, got, want []Player) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("GOT %+v, WANT %+v", got, want)
 	}
