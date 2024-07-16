@@ -111,7 +111,15 @@ func TestLeague(t *testing.T) {
 		// assert status code
 		AssertEqual(t, response.Code, http.StatusOK)
 		AssertLeague(t, got, wantedLeague)
+
+		assertContentType(t, response, "application/json")
 	})
+}
+
+func assertContentType(t testing.TB, response *httptest.ResponseRecorder, want string) {
+	if response.Header().Get("content-type") != want {
+		t.Errorf("response did not have valid content-type of %s, got %v", want, response.Result().Header)
+	}
 }
 
 func newLeaguaRequest() *http.Request {
