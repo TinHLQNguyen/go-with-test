@@ -10,6 +10,8 @@ import (
 // TODO allow concurrency POST & GET with mutex
 // TODO implement a real database playerstorage
 
+const jsonContentType = "application/json"
+
 type PlayerStore interface {
 	GetPlayerScore(string) (int, bool)
 	RecordWin(string)
@@ -41,7 +43,7 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p.store.GetLeague())
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("content-type", jsonContentType)
 }
 
 func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
