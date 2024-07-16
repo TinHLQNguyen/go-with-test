@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -9,12 +10,43 @@ import (
 // TODO allow concurrency POST & GET with mutex
 // TODO implement a real database playerstorage
 
-type PlayerServer struct {
-	store PlayerStore
+const jsonContentType = "application/json"
+
+type PlayerStore interface {
+	GetPlayerScore(string) (int, bool)
+	RecordWin(string)
+	GetLeague() []Player
 }
 
-// Implement Handler interface for PlayerServer
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+type Player struct {
+	Name string
+	Wins int
+}
+
+type PlayerServer struct {
+	store PlayerStore
+	http.Handler
+}
+
+// generate new server along with router from store DB
+func NewPlayerServer(store PlayerStore) *PlayerServer {
+	p := new(PlayerServer)
+	p.store = store
+
+	router := http.NewServeMux()
+	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
+	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+	p.Handler = router
+
+	return p
+}
+
+func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(p.store.GetLeague())
+	w.Header().Set("content-type", jsonContentType)
+}
+
+func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
 	switch r.Method {
 	case http.MethodPost:
@@ -36,9 +68,4 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
 	}
 
 	fmt.Fprint(w, score)
-}
-
-type PlayerStore interface {
-	GetPlayerScore(string) (int, bool)
-	RecordWin(string)
 }
