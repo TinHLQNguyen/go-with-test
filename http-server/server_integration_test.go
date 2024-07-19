@@ -32,7 +32,10 @@ func TestRecordingWinAndRetrieveThem(t *testing.T) {
 		// Assert status
 		AssertEqual(t, response.Code, http.StatusOK)
 
-		got := getLeagueFromResponse(t, response.Body)
+		got, err := NewLeague(response.Body)
+		if err != nil {
+			t.Fatalf("unable to parse response from server %q into slice of Player, '%v'", response.Body, err)
+		}
 		want := []Player{
 			{"Pepper", 3},
 		}

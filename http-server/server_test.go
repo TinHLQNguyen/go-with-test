@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -107,7 +105,10 @@ func TestLeague(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		got := getLeagueFromResponse(t, response.Body)
+		got, err := NewLeague(response.Body)
+		if err != nil {
+			t.Fatalf("unable to parse response from server %q into slice of Player, '%v'", response.Body, err)
+		}
 		// assert status code
 		AssertEqual(t, response.Code, http.StatusOK)
 		assertLeague(t, got, wantedLeague)
@@ -125,15 +126,6 @@ func assertContentType(t testing.TB, response *httptest.ResponseRecorder, want s
 func newLeaguaRequest() *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, "/league", nil)
 	return req
-}
-
-func getLeagueFromResponse(t testing.TB, body io.Reader) (league []Player) {
-	t.Helper()
-	err := json.NewDecoder(body).Decode(&league)
-	if err != nil {
-		t.Fatalf("Unable to parse response from server %q into slice of Player, '%v'", body, err)
-	}
-	return league
 }
 
 func assertLeague(t testing.TB, got, want []Player) {
