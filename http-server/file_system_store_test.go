@@ -21,4 +21,8 @@ func TestFileSystemStore(t *testing.T) {
 	}
 
 	assertLeague(t, got, want)
+
+	// 2nd read to make sure can GetLeague multiple times
+	got = store.GetLeague()
+	assertLeague(t, got, want)
 }
