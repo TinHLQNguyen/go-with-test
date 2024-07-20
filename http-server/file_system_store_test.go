@@ -57,6 +57,22 @@ func TestFileSystemStore(t *testing.T) {
 		want := 11
 		AssertEqual(t, got, want)
 	})
+
+	t.Run("store wins for new players", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, `[
+      {"Name": "Abe", "Wins": 2},
+      {"Name": "Ben", "Wins": 10}
+      ]`)
+		defer cleanDatabase()
+
+		store := FileSystemPlayerStore{database}
+
+		store.RecordWin("Pepper")
+
+		got, _ := store.GetPlayerScore("Pepper")
+		want := 1
+		AssertEqual(t, got, want)
+	})
 }
 
 // func() is destructor
