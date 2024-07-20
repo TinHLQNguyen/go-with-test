@@ -15,7 +15,7 @@ const jsonContentType = "application/json"
 type PlayerStore interface {
 	GetPlayerScore(string) (int, bool)
 	RecordWin(string)
-	GetLeague() []Player
+	GetLeague() League
 }
 
 type Player struct {
