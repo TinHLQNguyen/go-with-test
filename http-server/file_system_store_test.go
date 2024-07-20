@@ -37,7 +37,7 @@ func TestFileSystemStore(t *testing.T) {
 
 		store := FileSystemPlayerStore{database}
 
-		got := store.GetPlayerScore("Abe")
+		got, _ := store.GetPlayerScore("Abe")
 		want := 2
 		AssertEqual(t, got, want)
 	})
@@ -53,7 +53,7 @@ func TestFileSystemStore(t *testing.T) {
 
 		store.RecordWin("Ben")
 
-		got := store.GetPlayerScore("Ben")
+		got, _ := store.GetPlayerScore("Ben")
 		want := 11
 		AssertEqual(t, got, want)
 	})
