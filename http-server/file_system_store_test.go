@@ -76,6 +76,15 @@ func TestFileSystemStore(t *testing.T) {
 		want := 1
 		AssertEqual(t, got, want)
 	})
+
+    t.Run("work with empty file", func(t *testing.T) {
+        database, cleanDatabase := createTempFile(t, "")
+        defer cleanDatabase()
+
+        _, err := NewFileSystemPlayerStore(database)
+
+        AssertNoError(t, err)
+    })
 }
 
 // func() is destructor

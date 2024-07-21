@@ -7,7 +7,7 @@ import (
 )
 
 func TestRecordingWinAndRetrieveThem(t *testing.T) {
-	database, cleanDatabase := createTempFile(t, "[]")
+	database, cleanDatabase := createTempFile(t, "")
 	defer cleanDatabase()
 	store, err := NewFileSystemPlayerStore(database)
 	AssertNoError(t, err)
