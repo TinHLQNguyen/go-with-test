@@ -30,3 +30,10 @@ func AssertFalse(t *testing.T, got bool) {
 		t.Errorf("GOT %v, WANT false", got)
 	}
 }
+
+func AssertNoError(t testing.TB, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatalf("didnt expect error but got one, %v", err)
+	}
+}

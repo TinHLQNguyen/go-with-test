@@ -13,7 +13,8 @@ func TestFileSystemStore(t *testing.T) {
       ]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemPlayerStore(database)
+		store, err := NewFileSystemPlayerStore(database)
+		AssertNoError(t, err)
 
 		got := store.GetLeague()
 		want := []Player{
@@ -34,7 +35,8 @@ func TestFileSystemStore(t *testing.T) {
       ]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemPlayerStore(database)
+		store, err := NewFileSystemPlayerStore(database)
+		AssertNoError(t, err)
 
 		got, _ := store.GetPlayerScore("Abe")
 		want := 2
@@ -48,7 +50,8 @@ func TestFileSystemStore(t *testing.T) {
       ]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemPlayerStore(database)
+		store, err := NewFileSystemPlayerStore(database)
+		AssertNoError(t, err)
 
 		store.RecordWin("Ben")
 
@@ -64,7 +67,8 @@ func TestFileSystemStore(t *testing.T) {
       ]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemPlayerStore(database)
+		store, err := NewFileSystemPlayerStore(database)
+		AssertNoError(t, err)
 
 		store.RecordWin("Pepper")
 
