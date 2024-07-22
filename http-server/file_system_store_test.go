@@ -6,7 +6,7 @@ import (
 )
 
 func TestFileSystemStore(t *testing.T) {
-	t.Run("get league from reader", func(t *testing.T) {
+	t.Run("get sorted league from reader", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, `[
       {"Name": "Abe", "Wins": 2},
       {"Name": "Ben", "Wins": 10}
@@ -18,8 +18,8 @@ func TestFileSystemStore(t *testing.T) {
 
 		got := store.GetLeague()
 		want := []Player{
-			{"Abe", 2},
 			{"Ben", 10},
+			{"Abe", 2},
 		}
 		assertLeague(t, got, want)
 
@@ -77,14 +77,14 @@ func TestFileSystemStore(t *testing.T) {
 		AssertEqual(t, got, want)
 	})
 
-    t.Run("work with empty file", func(t *testing.T) {
-        database, cleanDatabase := createTempFile(t, "")
-        defer cleanDatabase()
+	t.Run("work with empty file", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, "")
+		defer cleanDatabase()
 
-        _, err := NewFileSystemPlayerStore(database)
+		_, err := NewFileSystemPlayerStore(database)
 
-        AssertNoError(t, err)
-    })
+		AssertNoError(t, err)
+	})
 }
 
 // func() is destructor
