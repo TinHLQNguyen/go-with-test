@@ -2,6 +2,31 @@ package poker
 
 import "testing"
 
+// stub for test, following PlayerStore Interface
+type StubPlayerStore struct {
+	scores   map[string]int
+	winCalls []string
+	leaque   []Player
+}
+
+func newStubPlayerStore(score map[string]int, winCalls []string, leaqueTable []Player) *StubPlayerStore {
+	return &StubPlayerStore{score, winCalls, leaqueTable}
+}
+
+func (s *StubPlayerStore) GetPlayerScore(name string) (int, bool) {
+	score, ok := s.scores[name]
+	return score, ok
+}
+
+// spy on POST calls
+func (s *StubPlayerStore) RecordWin(name string) {
+	s.winCalls = append(s.winCalls, name)
+}
+
+func (s *StubPlayerStore) GetLeague() League {
+	return s.leaque
+}
+
 // comparable type parameter indicates that we only accept things that are comparable
 func AssertEqual[T comparable](t *testing.T, got, want T) {
 	t.Helper()
