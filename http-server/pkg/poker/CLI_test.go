@@ -6,11 +6,22 @@ import (
 )
 
 func TestCLI(t *testing.T) {
-	in := strings.NewReader("Chris wins\n")
+	t.Run("record Chris win from user input", func(t *testing.T) {
+		in := strings.NewReader("Chris wins\n")
 
-	playerStore := &StubPlayerStore{}
-	cli := &CLI{playerStore, in}
-	cli.PlayPoker()
+		playerStore := &StubPlayerStore{}
+		cli := &CLI{playerStore, in}
+		cli.PlayPoker()
 
-	assertPlayerWin(t, playerStore, "Chris")
+		assertPlayerWin(t, playerStore, "Chris")
+	})
+	t.Run("record Abe win from user input", func(t *testing.T) {
+		in := strings.NewReader("Abe wins\n")
+
+		playerStore := &StubPlayerStore{}
+		cli := &CLI{playerStore, in}
+		cli.PlayPoker()
+
+		assertPlayerWin(t, playerStore, "Abe")
+	})
 }
