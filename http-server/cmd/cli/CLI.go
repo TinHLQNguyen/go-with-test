@@ -1,17 +1,18 @@
-package poker
+package main
 
 import (
 	"bufio"
+	"go-with-test/http-server/pkg/poker"
 	"io"
 	"strings"
 )
 
 type CLI struct {
-	playerstore PlayerStore
+	playerstore poker.PlayerStore
 	in          *bufio.Scanner
 }
 
-func NewCLI(store PlayerStore, in io.Reader) *CLI {
+func NewCLI(store poker.PlayerStore, in io.Reader) *CLI {
 	return &CLI{
 		playerstore: store,
 		in:          bufio.NewScanner(in),
