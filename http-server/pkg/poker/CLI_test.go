@@ -1,4 +1,4 @@
-package main
+package poker_test
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ func TestCLI(t *testing.T) {
 		playerStore := &poker.StubPlayerStore{}
 		dummyAlerter := &SpyBlindAlerter{}
 
-		cli := NewCLI(playerStore, in, dummyAlerter)
+		cli := poker.NewCLI(playerStore, in, dummyAlerter)
 		cli.PlayPoker()
 
 		poker.AssertPlayerWin(t, playerStore, "Chris")
@@ -26,7 +26,7 @@ func TestCLI(t *testing.T) {
 		playerStore := &poker.StubPlayerStore{}
 		dummyAlerter := &SpyBlindAlerter{}
 
-		cli := NewCLI(playerStore, in, dummyAlerter)
+		cli := poker.NewCLI(playerStore, in, dummyAlerter)
 		cli.PlayPoker()
 
 		poker.AssertPlayerWin(t, playerStore, "Abe")
@@ -37,7 +37,7 @@ func TestCLI(t *testing.T) {
 		playerStore := &poker.StubPlayerStore{}
 		blindAlerter := &SpyBlindAlerter{}
 
-		cli := NewCLI(playerStore, in, blindAlerter)
+		cli := poker.NewCLI(playerStore, in, blindAlerter)
 		cli.PlayPoker()
 
 		cases := []scheduledAlert{

@@ -1,28 +1,19 @@
-package main
+package poker
 
 import (
 	"bufio"
-	"go-with-test/http-server/pkg/poker"
 	"io"
 	"strings"
 	"time"
 )
 
-type BlindAlerter interface {
-	ScheduleAlertAt(duration time.Duration, amount int)
-}
-
-type dummyAlerter struct{}
-
-func (d *dummyAlerter) ScheduleAlertAt(duration time.Duration, amount int) {}
-
 type CLI struct {
-	playerstore poker.PlayerStore
+	playerstore PlayerStore
 	in          *bufio.Scanner
 	alerter     BlindAlerter
 }
 
-func NewCLI(store poker.PlayerStore, in io.Reader, alerter BlindAlerter) *CLI {
+func NewCLI(store PlayerStore, in io.Reader, alerter BlindAlerter) *CLI {
 	return &CLI{
 		playerstore: store,
 		in:          bufio.NewScanner(in),
