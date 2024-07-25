@@ -73,9 +73,8 @@ func TestCLI(t *testing.T) {
 		cli.PlayPoker()
 
 		got := stdOut.String()
-		want := "Please enter the number of player: "
 
-		poker.AssertEqual(t, got, want)
+		poker.AssertEqual(t, got, poker.PlayerPrompt)
 	})
 }
 
