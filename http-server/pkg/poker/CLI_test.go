@@ -11,11 +11,12 @@ import (
 
 func TestCLI(t *testing.T) {
 	dummyStdOut := &bytes.Buffer{}
-	t.Run("prompt user to enter number of player and start game", func(t *testing.T) {
+	t.Run("prompt user to enter number of player and start game that ends with Abe win", func(t *testing.T) {
 		numberOfPlayer := 7
+		winner := "Abe"
 
 		stdOut := &bytes.Buffer{}
-		in := strings.NewReader(fmt.Sprintf("%d\n", numberOfPlayer))
+		in := strings.NewReader(fmt.Sprintf("%d\n%s wins\n", numberOfPlayer, winner))
 		game := &SpyGame{}
 
 		cli := poker.NewCLI(in, stdOut, game)
@@ -28,7 +29,7 @@ func TestCLI(t *testing.T) {
 			t.Errorf("wanted game to start with %d, got %d", numberOfPlayer, game.StartedWith)
 		}
 	})
-	t.Run("record Chris win from user input", func(t *testing.T) {
+	t.Run("start 7 players game and Chris win", func(t *testing.T) {
 		numberOfPlayer := 7
 		winner := "Chris"
 		in := strings.NewReader(fmt.Sprintf("%d\n%s wins\n", numberOfPlayer, winner))
@@ -49,14 +50,19 @@ func TestCLI(t *testing.T) {
 	t.Run("print error when non-numeric player is input", func(t *testing.T) {
 		in := strings.NewReader("NotNum\n")
 
+		stdOut := &bytes.Buffer{}
 		game := &SpyGame{}
 
-		cli := poker.NewCLI(in, dummyStdOut, game)
+		cli := poker.NewCLI(in, stdOut, game)
 		cli.PlayPoker()
 
 		if game.StartCalled {
 			t.Error("game should not have started")
 		}
+
+		gotPrompt := stdOut.String()
+		wantPrompt := poker.PlayerPrompt + poker.BadPlayerInputErrMsg
+		poker.AssertEqual(t, gotPrompt, wantPrompt)
 	})
 }
 
