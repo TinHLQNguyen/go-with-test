@@ -13,7 +13,7 @@ var (
 	dummyStdOut      = &bytes.Buffer{}
 )
 
-func TestGame(t *testing.T) {
+func TestGame_Start(t *testing.T) {
 	t.Run("schedule printing of blind values for 5 players game", func(t *testing.T) {
 		playerStore := &poker.StubPlayerStore{}
 		blindAlerter := &SpyBlindAlerter{}
@@ -55,6 +55,17 @@ func TestGame(t *testing.T) {
 
 		checkSchedulingCases(cases, t, blindAlerter)
 	})
+}
+
+func TestGame_Finish(t *testing.T) {
+	playerStore := &poker.StubPlayerStore{}
+	blindAlerter := &SpyBlindAlerter{}
+	game := poker.NewGame(playerStore, blindAlerter)
+
+	winner := "Abe"
+	game.Finish(winner)
+
+	poker.AssertPlayerWin(t, playerStore, winner)
 }
 
 func checkSchedulingCases(cases []scheduledAlert, t *testing.T, blindAlerter *SpyBlindAlerter) {
