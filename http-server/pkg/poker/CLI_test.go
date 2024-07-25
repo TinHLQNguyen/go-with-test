@@ -1,6 +1,7 @@
 package poker_test
 
 import (
+	"bytes"
 	"fmt"
 	"go-with-test/http-server/pkg/poker"
 	"strings"
@@ -15,7 +16,7 @@ func TestCLI(t *testing.T) {
 		playerStore := &poker.StubPlayerStore{}
 		dummyAlerter := &SpyBlindAlerter{}
 
-		cli := poker.NewCLI(playerStore, in, dummyAlerter)
+		cli := poker.NewCLI(playerStore, in, dummyStdOut, dummyAlerter)
 		cli.PlayPoker()
 
 		poker.AssertPlayerWin(t, playerStore, "Chris")
@@ -26,7 +27,7 @@ func TestCLI(t *testing.T) {
 		playerStore := &poker.StubPlayerStore{}
 		dummyAlerter := &SpyBlindAlerter{}
 
-		cli := poker.NewCLI(playerStore, in, dummyAlerter)
+		cli := poker.NewCLI(playerStore, in, dummyStdOut, dummyAlerter)
 		cli.PlayPoker()
 
 		poker.AssertPlayerWin(t, playerStore, "Abe")
@@ -37,7 +38,7 @@ func TestCLI(t *testing.T) {
 		playerStore := &poker.StubPlayerStore{}
 		blindAlerter := &SpyBlindAlerter{}
 
-		cli := poker.NewCLI(playerStore, in, blindAlerter)
+		cli := poker.NewCLI(playerStore, in, dummyStdOut, blindAlerter)
 		cli.PlayPoker()
 
 		cases := []scheduledAlert{
@@ -65,7 +66,25 @@ func TestCLI(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("prompt user to enter number of player", func(t *testing.T) {
+		stdOut := &bytes.Buffer{}
+		cli := poker.NewCLI(dummyPlayerStore, dummyStdIn, stdOut, dummyBlindAlerter)
+		cli.PlayPoker()
+
+		got := stdOut.String()
+		want := "Please enter the number of player: "
+
+		poker.AssertEqual(t, got, want)
+	})
 }
+
+var (
+	dummyBlindAlerter = &SpyBlindAlerter{}
+	dummyPlayerStore  = &poker.StubPlayerStore{}
+	dummyStdIn        = &bytes.Buffer{}
+	dummyStdOut       = &bytes.Buffer{}
+)
 
 type scheduledAlert struct {
 	at     time.Duration
