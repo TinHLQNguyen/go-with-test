@@ -47,6 +47,19 @@ func TestCLI(t *testing.T) {
 		assertGameNotStart(t, game)
 		assertMessageSentToUser(t, stdOut, poker.PlayerPrompt, poker.BadPlayerInputErrMsg)
 	})
+	t.Run("print error when receive bad format winner command", func(t *testing.T) {
+		in := userSends("3", "Abe lose")
+
+		stdOut := &bytes.Buffer{}
+		game := &SpyGame{}
+
+		cli := poker.NewCLI(in, stdOut, game)
+		cli.PlayPoker()
+
+		assertGameNotFinish(t, game)
+		assertGameStartedWith(t, game, 3)
+		assertMessageSentToUser(t, stdOut, poker.PlayerPrompt, poker.BadWinnerInputErrMsg)
+	})
 }
 
 type scheduledAlert struct {
@@ -78,6 +91,7 @@ type SpyGame struct {
 	StartedWith  int
 	StartCalled  bool
 	FinishedWith string
+	FinishCalled bool
 }
 
 func (s *SpyGame) Start(numberOfPlayer int) {
@@ -108,6 +122,12 @@ func assertGameFinishedWith(t testing.TB, game *SpyGame, winner string) {
 func assertGameNotStart(t testing.TB, game *SpyGame) {
 	if game.StartCalled {
 		t.Error("game should not have started")
+	}
+}
+
+func assertGameNotFinish(t testing.TB, game *SpyGame) {
+	if game.FinishCalled {
+		t.Error("game should not have finished")
 	}
 }
 
