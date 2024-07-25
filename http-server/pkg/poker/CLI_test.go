@@ -46,6 +46,18 @@ func TestCLI(t *testing.T) {
 			t.Errorf("wanted game to finish with %s as winner, got %s", winner, game.FinishedWith)
 		}
 	})
+	t.Run("print error when non-numeric player is input", func(t *testing.T) {
+		in := strings.NewReader("NotNum\n")
+
+		game := &SpyGame{}
+
+		cli := poker.NewCLI(in, dummyStdOut, game)
+		cli.PlayPoker()
+
+		if game.StartCalled {
+			t.Error("game should not have started")
+		}
+	})
 }
 
 type scheduledAlert struct {
@@ -75,11 +87,13 @@ func assertScheduledAlert(t testing.TB, got, want scheduledAlert) {
 
 type SpyGame struct {
 	StartedWith  int
+	StartCalled  bool
 	FinishedWith string
 }
 
 func (s *SpyGame) Start(numberOfPlayer int) {
 	s.StartedWith = numberOfPlayer
+	s.StartCalled = true
 }
 
 func (s *SpyGame) Finish(winner string) {
