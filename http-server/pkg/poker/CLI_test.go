@@ -11,43 +11,40 @@ import (
 
 func TestCLI(t *testing.T) {
 	dummyStdOut := &bytes.Buffer{}
-	t.Run("prompt user to enter number of player", func(t *testing.T) {
+	t.Run("prompt user to enter number of player and start game", func(t *testing.T) {
+		numberOfPlayer := 7
+
 		stdOut := &bytes.Buffer{}
-		in := strings.NewReader("")
-		blindAlerter := &SpyBlindAlerter{}
-		game := poker.NewGame(dummyPlayerStore, blindAlerter)
+		in := strings.NewReader(fmt.Sprintf("%d\n", numberOfPlayer))
+		game := &SpyGame{}
 
 		cli := poker.NewCLI(in, stdOut, game)
 		cli.PlayPoker()
 
 		got := stdOut.String()
 		poker.AssertEqual(t, got, poker.PlayerPrompt)
+
+		if game.StartedWith != numberOfPlayer {
+			t.Errorf("wanted game to start with %d, got %d", numberOfPlayer, game.StartedWith)
+		}
 	})
 	t.Run("record Chris win from user input", func(t *testing.T) {
-		// we don't care how many players, just use 5
-		in := strings.NewReader("5\nChris wins\n")
+		numberOfPlayer := 7
+		winner := "Chris"
+		in := strings.NewReader(fmt.Sprintf("%d\n%s wins\n", numberOfPlayer, winner))
 
-		playerStore := &poker.StubPlayerStore{}
-		dummyAlerter := &SpyBlindAlerter{}
-		game := poker.NewGame(playerStore, dummyAlerter)
-
-		cli := poker.NewCLI(in, dummyStdOut, game)
-		cli.PlayPoker()
-
-		poker.AssertPlayerWin(t, playerStore, "Chris")
-	})
-	t.Run("record Abe win from user input", func(t *testing.T) {
-		// we don't care how many players, just use 5
-		in := strings.NewReader("5\nAbe wins\n")
-
-		playerStore := &poker.StubPlayerStore{}
-		dummyAlerter := &SpyBlindAlerter{}
-		game := poker.NewGame(playerStore, dummyAlerter)
+		game := &SpyGame{}
 
 		cli := poker.NewCLI(in, dummyStdOut, game)
 		cli.PlayPoker()
 
-		poker.AssertPlayerWin(t, playerStore, "Abe")
+		if game.StartedWith != numberOfPlayer {
+			t.Errorf("wanted game to start with %d, got %d", numberOfPlayer, game.StartedWith)
+		}
+
+		if game.FinishedWith != winner {
+			t.Errorf("wanted game to finish with %s as winner, got %s", winner, game.FinishedWith)
+		}
 	})
 }
 
@@ -74,4 +71,17 @@ func assertScheduledAlert(t testing.TB, got, want scheduledAlert) {
 	if got != want {
 		t.Errorf("got alert %v, want alert %v", got, want)
 	}
+}
+
+type SpyGame struct {
+	StartedWith  int
+	FinishedWith string
+}
+
+func (s *SpyGame) Start(numberOfPlayer int) {
+	s.StartedWith = numberOfPlayer
+}
+
+func (s *SpyGame) Finish(winner string) {
+	s.FinishedWith = winner
 }
