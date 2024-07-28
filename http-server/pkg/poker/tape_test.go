@@ -1,15 +1,16 @@
-package poker
+package poker_test
 
 import (
+	"go-with-test/http-server/pkg/poker"
 	"io"
 	"testing"
 )
 
 func TestTape_Write(t *testing.T) {
-	file, clean := createTempFile(t, "12345")
+	file, clean := poker.CreateTempFile(t, "12345")
 	defer clean()
 
-	tape := &tape{file}
+	tape := &poker.Tape{file}
 
 	tape.Write([]byte("abc"))
 
@@ -19,5 +20,5 @@ func TestTape_Write(t *testing.T) {
 	got := string(newFileContent)
 	want := "abc"
 
-	AssertEqual(t, got, want)
+	poker.AssertEqual(t, got, want)
 }

@@ -1,7 +1,12 @@
 package poker
 
-import "testing"
+import (
+	"os"
+	"reflect"
+	"testing"
+)
 
+// //////////////// mocks and stub
 // stub for test, following PlayerStore Interface
 type StubPlayerStore struct {
 	scores   map[string]int
@@ -9,7 +14,7 @@ type StubPlayerStore struct {
 	leaque   []Player
 }
 
-func newStubPlayerStore(score map[string]int, winCalls []string, leaqueTable []Player) *StubPlayerStore {
+func NewStubPlayerStore(score map[string]int, winCalls []string, leaqueTable []Player) *StubPlayerStore {
 	return &StubPlayerStore{score, winCalls, leaqueTable}
 }
 
@@ -27,6 +32,26 @@ func (s *StubPlayerStore) GetLeague() League {
 	return s.leaque
 }
 
+// func() is destructor for fs db
+func CreateTempFile(t testing.TB, initialData string) (*os.File, func()) {
+	t.Helper()
+
+	tmpFile, err := os.CreateTemp("", "db")
+	if err != nil {
+		t.Fatalf("could not create temp file %v", err)
+	}
+
+	tmpFile.Write([]byte(initialData))
+
+	removeFile := func() {
+		tmpFile.Close()
+		os.Remove(tmpFile.Name())
+	}
+
+	return tmpFile, removeFile
+}
+
+// /////////////// Asserttion
 // comparable type parameter indicates that we only accept things that are comparable
 func AssertEqual[T comparable](t *testing.T, got, want T) {
 	t.Helper()
@@ -72,5 +97,11 @@ func AssertPlayerWin(t testing.TB, store *StubPlayerStore, winner string) {
 	// assert if correct name is recorded
 	if store.winCalls[0] != winner {
 		t.Errorf("did not store correct winner got %q want %q", store.winCalls[0], winner)
+	}
+}
+
+func AssertLeague(t testing.TB, got, want []Player) {
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("GOT %+v, WANT %+v", got, want)
 	}
 }

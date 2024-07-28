@@ -1,15 +1,15 @@
-package poker
+package poker_test
 
 import (
 	"fmt"
+	"go-with-test/http-server/pkg/poker"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 )
 
 func TestGetPlayers(t *testing.T) {
-	store := newStubPlayerStore(
+	store := poker.NewStubPlayerStore(
 		map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
@@ -17,7 +17,7 @@ func TestGetPlayers(t *testing.T) {
 		},
 		[]string{},
 		nil)
-	server := NewPlayerServer(store)
+	server := poker.NewPlayerServer(store)
 
 	t.Run("Return Pepper's score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -27,9 +27,9 @@ func TestGetPlayers(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		// assert status code
-		AssertEqual(t, response.Code, http.StatusOK)
+		poker.AssertEqual(t, response.Code, http.StatusOK)
 		// assert response body
-		AssertEqual(t, response.Body.String(), "20")
+		poker.AssertEqual(t, response.Body.String(), "20")
 	})
 
 	t.Run("Return Loser's 0 score", func(t *testing.T) {
@@ -40,9 +40,9 @@ func TestGetPlayers(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		// assert status code
-		AssertEqual(t, response.Code, http.StatusOK)
+		poker.AssertEqual(t, response.Code, http.StatusOK)
 		// assert response body
-		AssertEqual(t, response.Body.String(), "0")
+		poker.AssertEqual(t, response.Body.String(), "0")
 	})
 
 	t.Run("Return 404 on missing player", func(t *testing.T) {
@@ -52,7 +52,7 @@ func TestGetPlayers(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		AssertEqual(t, response.Code, http.StatusNotFound)
+		poker.AssertEqual(t, response.Code, http.StatusNotFound)
 	})
 }
 
@@ -63,50 +63,45 @@ func newGetScoreRequest(name string) (request *http.Request) {
 }
 
 func TestStoreWins(t *testing.T) {
-	store := newStubPlayerStore(nil, nil, nil)
-	server := NewPlayerServer(store)
+	store := poker.NewStubPlayerStore(nil, nil, nil)
+	server := poker.NewPlayerServer(store)
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
 		player := "Pepper"
-		request := newPostWinRequest(player)
+		request := poker.NewPostWinRequest(player)
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
 
 		// assert status code
-		AssertEqual(t, response.Code, http.StatusAccepted)
+		poker.AssertEqual(t, response.Code, http.StatusAccepted)
 
-		AssertPlayerWin(t, store, player)
+		poker.AssertPlayerWin(t, store, player)
 	})
 }
 
-func newPostWinRequest(name string) (request *http.Request) {
-	request, _ = http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
-	return request
-}
-
 func TestLeague(t *testing.T) {
-	wantedLeague := []Player{
+	wantedLeague := []poker.Player{
 		{"Abe", 10},
 		{"Bob", 22},
 		{"Cleo", 30},
 	}
-	store := newStubPlayerStore(nil, nil, wantedLeague)
-	server := NewPlayerServer(store)
+	store := poker.NewStubPlayerStore(nil, nil, wantedLeague)
+	server := poker.NewPlayerServer(store)
 
 	t.Run("it returns StatusOK 200 on /league", func(t *testing.T) {
-		request := newLeaguaRequest()
+		request := poker.NewLeagueRequest()
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
 
-		got, err := NewLeague(response.Body)
+		got, err := poker.NewLeague(response.Body)
 		if err != nil {
 			t.Fatalf("unable to parse response from server %q into slice of Player, '%v'", response.Body, err)
 		}
 		// assert status code
-		AssertEqual(t, response.Code, http.StatusOK)
-		assertLeague(t, got, wantedLeague)
+		poker.AssertEqual(t, response.Code, http.StatusOK)
+		poker.AssertLeague(t, got, wantedLeague)
 
 		assertContentType(t, response, "application/json")
 	})
@@ -115,16 +110,5 @@ func TestLeague(t *testing.T) {
 func assertContentType(t testing.TB, response *httptest.ResponseRecorder, want string) {
 	if response.Header().Get("content-type") != want {
 		t.Errorf("response did not have valid content-type of %s, got %v", want, response.Result().Header)
-	}
-}
-
-func newLeaguaRequest() *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, "/league", nil)
-	return req
-}
-
-func assertLeague(t testing.TB, got, want []Player) {
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("GOT %+v, WANT %+v", got, want)
 	}
 }
