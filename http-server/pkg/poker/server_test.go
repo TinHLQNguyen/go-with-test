@@ -5,7 +5,10 @@ import (
 	"go-with-test/http-server/pkg/poker"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+
+	"github.com/gorilla/websocket"
 )
 
 func TestGetPlayers(t *testing.T) {
@@ -117,6 +120,26 @@ func TestGame(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		poker.AssertEqual(t, response.Code, http.StatusOK)
+	})
+	t.Run("When we get a winner over websocket, it's the winner", func(t *testing.T) {
+		store := &poker.StubPlayerStore{}
+		winner := "Ruth"
+		server := httptest.NewServer(poker.NewPlayerServer(store))
+		defer server.Close()
+
+		wsUrl := "ws" + strings.TrimPrefix(server.URL, "http") + "/ws"
+
+		ws, _, err := websocket.DefaultDialer.Dial(wsUrl, nil)
+		if err != nil {
+			t.Fatalf("could not open a ws connection on %s %v", wsUrl, err)
+		}
+		defer ws.Close()
+
+		if err := ws.WriteMessage(websocket.TextMessage, []byte(winner)); err != nil {
+			t.Fatalf("could not send message over ws %v", err)
+		}
+
+		poker.AssertPlayerWin(t, store, winner)
 	})
 }
 
