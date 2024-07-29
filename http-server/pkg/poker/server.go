@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"text/template"
 )
 
 // TODO allow concurrency POST & GET with mutex
@@ -72,5 +73,11 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
 }
 
 func (p *PlayerServer) gameHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	tmpl, err := template.ParseFiles("game.html")
+	if err != nil {
+		http.Error(w, fmt.Sprintf("error loading template %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl.Execute(w, nil)
 }
