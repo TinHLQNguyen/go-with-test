@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -139,6 +140,7 @@ func TestGame(t *testing.T) {
 			t.Fatalf("could not send message over ws %v", err)
 		}
 
+		time.Sleep(10 * time.Millisecond) // FIXME random sleep delay to make sure ws could have time to read and RecordWin
 		poker.AssertPlayerWin(t, store, winner)
 	})
 }
