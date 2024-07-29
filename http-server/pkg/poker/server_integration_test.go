@@ -15,9 +15,9 @@ func TestRecordingWinAndRetrieveThem(t *testing.T) {
 	server := poker.NewPlayerServer(store)
 	player := "Pepper"
 
-	server.ServeHTTP(httptest.NewRecorder(), poker.NewPostWinRequest(player))
-	server.ServeHTTP(httptest.NewRecorder(), poker.NewPostWinRequest(player))
-	server.ServeHTTP(httptest.NewRecorder(), poker.NewPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
 
 	t.Run("get score", func(t *testing.T) {
 		response := httptest.NewRecorder()
@@ -31,7 +31,7 @@ func TestRecordingWinAndRetrieveThem(t *testing.T) {
 
 	t.Run("get league", func(t *testing.T) {
 		response := httptest.NewRecorder()
-		server.ServeHTTP(response, poker.NewLeagueRequest())
+		server.ServeHTTP(response, newLeagueRequest())
 
 		// Assert status
 		poker.AssertEqual(t, response.Code, http.StatusOK)

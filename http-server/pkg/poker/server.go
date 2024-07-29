@@ -69,13 +69,3 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
 
 	fmt.Fprint(w, score)
 }
-
-func NewPostWinRequest(name string) (request *http.Request) {
-	request, _ = http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
-	return request
-}
-
-func NewLeagueRequest() *http.Request {
-	req, _ := http.NewRequest(http.MethodGet, "/league", nil)
-	return req
-}

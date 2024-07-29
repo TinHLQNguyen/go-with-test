@@ -68,7 +68,7 @@ func TestStoreWins(t *testing.T) {
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
 		player := "Pepper"
-		request := poker.NewPostWinRequest(player)
+		request := newPostWinRequest(player)
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
@@ -90,7 +90,7 @@ func TestLeague(t *testing.T) {
 	server := poker.NewPlayerServer(store)
 
 	t.Run("it returns StatusOK 200 on /league", func(t *testing.T) {
-		request := poker.NewLeagueRequest()
+		request := newLeagueRequest()
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
@@ -111,4 +111,14 @@ func assertContentType(t testing.TB, response *httptest.ResponseRecorder, want s
 	if response.Header().Get("content-type") != want {
 		t.Errorf("response did not have valid content-type of %s, got %v", want, response.Result().Header)
 	}
+}
+
+func newPostWinRequest(name string) (request *http.Request) {
+	request, _ = http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
+	return request
+}
+
+func newLeagueRequest() *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, "/league", nil)
+	return req
 }
