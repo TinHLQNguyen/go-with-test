@@ -21,7 +21,7 @@ func TestGetPlayers(t *testing.T) {
 		},
 		[]string{},
 		nil)
-	server := poker.NewPlayerServer(store)
+	server := mustMakePlayerServer(t, store)
 
 	t.Run("Return Pepper's score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -68,7 +68,7 @@ func newGetScoreRequest(name string) (request *http.Request) {
 
 func TestStoreWins(t *testing.T) {
 	store := poker.NewStubPlayerStore(nil, nil, nil)
-	server := poker.NewPlayerServer(store)
+	server := mustMakePlayerServer(t, store)
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
 		player := "Pepper"
@@ -91,7 +91,7 @@ func TestLeague(t *testing.T) {
 		{"Cleo", 30},
 	}
 	store := poker.NewStubPlayerStore(nil, nil, wantedLeague)
-	server := poker.NewPlayerServer(store)
+	server := mustMakePlayerServer(t, store)
 
 	t.Run("it returns StatusOK 200 on /league", func(t *testing.T) {
 		request := newLeagueRequest()
@@ -113,7 +113,7 @@ func TestLeague(t *testing.T) {
 
 func TestGame(t *testing.T) {
 	t.Run("GET /game returns 200", func(t *testing.T) {
-		server := poker.NewPlayerServer(&poker.StubPlayerStore{})
+		server := mustMakePlayerServer(t, &poker.StubPlayerStore{})
 
 		request := newGameRequest()
 		response := httptest.NewRecorder()
@@ -125,7 +125,7 @@ func TestGame(t *testing.T) {
 	t.Run("When we get a winner over websocket, it's the winner", func(t *testing.T) {
 		store := &poker.StubPlayerStore{}
 		winner := "Ruth"
-		server := httptest.NewServer(poker.NewPlayerServer(store))
+		server := httptest.NewServer(mustMakePlayerServer(t, store))
 		defer server.Close()
 
 		wsUrl := "ws" + strings.TrimPrefix(server.URL, "http") + "/ws"
@@ -164,4 +164,12 @@ func newLeagueRequest() *http.Request {
 func newGameRequest() *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, "/game", nil)
 	return req
+}
+
+func mustMakePlayerServer(t *testing.T, store poker.PlayerStore) *poker.PlayerServer {
+	server, err := poker.NewPlayerServer(store)
+	if err != nil {
+		t.Fatal("problem creating player server", err)
+	}
+	return server
 }

@@ -29,11 +29,20 @@ type Player struct {
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
+	tempate *template.Template
 }
 
+const htmlTemplatePath = "game.html"
+
 // generate new server along with router from store DB
-func NewPlayerServer(store PlayerStore) *PlayerServer {
+func NewPlayerServer(store PlayerStore) (*PlayerServer, error) {
 	p := new(PlayerServer)
+	tmpl, err := template.ParseFiles(htmlTemplatePath)
+	if err != nil {
+		return nil, fmt.Errorf("error loading template from %v %s", htmlTemplatePath, err)
+	}
+
+	p.tempate = tmpl
 	p.store = store
 
 	router := http.NewServeMux()
@@ -43,7 +52,7 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 	router.Handle("/ws", http.HandlerFunc(p.webSocket))
 	p.Handler = router
 
-	return p
+	return p, nil
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,22 +85,17 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
 }
 
 func (p *PlayerServer) gameHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("game.html")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("error loading template %s", err.Error()), http.StatusInternalServerError)
-		return
-	}
-
-	tmpl.Execute(w, nil)
+	p.tempate.Execute(w, nil)
 }
 
 func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
-	upgrader := websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-	}
-	conn, _ := upgrader.Upgrade(w, r, nil)
+	conn, _ := wsUpgrader.Upgrade(w, r, nil)
 	_, winnerMsg, _ := conn.ReadMessage()
 
 	p.store.RecordWin(string(winnerMsg))
+}
+
+var wsUpgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
 }
