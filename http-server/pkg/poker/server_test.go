@@ -130,15 +130,10 @@ func TestGame(t *testing.T) {
 
 		wsUrl := "ws" + strings.TrimPrefix(server.URL, "http") + "/ws"
 
-		ws, _, err := websocket.DefaultDialer.Dial(wsUrl, nil)
-		if err != nil {
-			t.Fatalf("could not open a ws connection on %s %v", wsUrl, err)
-		}
+		ws := mustDialWS(t, wsUrl)
 		defer ws.Close()
 
-		if err := ws.WriteMessage(websocket.TextMessage, []byte(winner)); err != nil {
-			t.Fatalf("could not send message over ws %v", err)
-		}
+		writeWSMessage(t, ws, winner)
 
 		time.Sleep(10 * time.Millisecond) // FIXME random sleep delay to make sure ws could have time to read and RecordWin
 		poker.AssertPlayerWin(t, store, winner)
@@ -172,4 +167,19 @@ func mustMakePlayerServer(t *testing.T, store poker.PlayerStore) *poker.PlayerSe
 		t.Fatal("problem creating player server", err)
 	}
 	return server
+}
+
+func mustDialWS(t *testing.T, url string) *websocket.Conn {
+	ws, _, err := websocket.DefaultDialer.Dial(url, nil)
+	if err != nil {
+		t.Fatalf("could not open a ws connection on %s %v", url, err)
+	}
+	return ws
+}
+
+func writeWSMessage(t testing.TB, conn *websocket.Conn, message string) {
+	t.Helper()
+	if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
+		t.Fatalf("could not send message over ws %v", err)
+	}
 }
