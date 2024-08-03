@@ -3,15 +3,17 @@ package poker
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"text/template"
 
 	"github.com/gorilla/websocket"
 )
 
-// TODO allow concurrency POST & GET with mutex
-// TODO implement a real database playerstorage
+// TODO: allow concurrency POST & GET with mutex
+// TODO: implement a real database playerstorage
 
 const jsonContentType = "application/json"
 
@@ -30,18 +32,20 @@ type PlayerServer struct {
 	store PlayerStore
 	http.Handler
 	tempate *template.Template
+	game    Game
 }
 
 const htmlTemplatePath = "game.html"
 
 // generate new server along with router from store DB
-func NewPlayerServer(store PlayerStore) (*PlayerServer, error) {
+func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
 	p := new(PlayerServer)
 	tmpl, err := template.ParseFiles(htmlTemplatePath)
 	if err != nil {
 		return nil, fmt.Errorf("error loading template from %v %s", htmlTemplatePath, err)
 	}
 
+	p.game = game
 	p.tempate = tmpl
 	p.store = store
 
@@ -90,9 +94,13 @@ func (p *PlayerServer) gameHandler(w http.ResponseWriter, r *http.Request) {
 
 func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
 	conn, _ := wsUpgrader.Upgrade(w, r, nil)
-	_, winnerMsg, _ := conn.ReadMessage()
 
-	p.store.RecordWin(string(winnerMsg))
+	_, numOfPlayerMsg, _ := conn.ReadMessage()
+	numOfPlayer, _ := strconv.Atoi(string(numOfPlayerMsg))
+	p.game.Start(numOfPlayer, io.Discard) // TODO: display blind msg on brower
+
+	_, winnerMsg, _ := conn.ReadMessage()
+	p.game.Finish(string(winnerMsg))
 }
 
 var wsUpgrader = websocket.Upgrader{

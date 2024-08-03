@@ -11,7 +11,6 @@ import (
 )
 
 func TestCLI(t *testing.T) {
-	dummyStdOut := &bytes.Buffer{}
 	t.Run("prompt user to enter number of player and start game that ends with Abe win", func(t *testing.T) {
 		in := userSends("7", "Abe wins")
 
@@ -27,10 +26,11 @@ func TestCLI(t *testing.T) {
 	})
 	t.Run("start 7 players game and Chris win", func(t *testing.T) {
 		in := userSends("3", "Chris wins")
+		stdOut := &bytes.Buffer{}
 
 		game := &SpyGame{}
 
-		cli := poker.NewCLI(in, dummyStdOut, game)
+		cli := poker.NewCLI(in, stdOut, game)
 		cli.PlayPoker()
 
 		assertGameStartedWith(t, game, 3)
@@ -96,8 +96,8 @@ type SpyGame struct {
 }
 
 func (s *SpyGame) Start(numberOfPlayer int, alertDestination io.Writer) {
-	s.StartedWith = numberOfPlayer
 	s.StartCalled = true
+	s.StartedWith = numberOfPlayer
 }
 
 func (s *SpyGame) Finish(winner string) {
