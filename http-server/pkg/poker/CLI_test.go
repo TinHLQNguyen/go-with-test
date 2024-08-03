@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"go-with-test/http-server/pkg/poker"
+	"io"
 	"strings"
 	"testing"
 	"time"
@@ -76,7 +77,7 @@ type SpyBlindAlerter struct {
 	alerts []scheduledAlert
 }
 
-func (s *SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
+func (s *SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int, to io.Writer) {
 	s.alerts = append(s.alerts, scheduledAlert{duration, amount})
 }
 
