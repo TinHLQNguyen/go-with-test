@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	PlayerPrompt         = "Please enter the number of player: "
-	BadPlayerInputErrMsg = "Bad value received for number of players, please try again with a number"
-	BadWinnerInputErrMsg = "Bad value received for winner, please try again with a number"
+	PlayerPrompt         = "please enter the number of player: "
+	BadPlayerInputErrMsg = "bad value received for number of players, please try again with a number"
+	BadWinnerInputErrMsg = "bad value received for winner, please try again with a number"
 )
 
 type CLI struct {
@@ -43,6 +43,7 @@ func (cli *CLI) PlayPoker() {
 	winner, err := extractWinner(userInput)
 	if err != nil {
 		fmt.Fprint(cli.out, BadWinnerInputErrMsg)
+		return
 	}
 
 	cli.game.Finish(winner)
@@ -51,7 +52,7 @@ func (cli *CLI) PlayPoker() {
 func extractWinner(userInput string) (string, error) {
 	winner, ok := strings.CutSuffix(userInput, " wins")
 	if !ok {
-		return "", errors.New("")
+		return "", errors.New(BadWinnerInputErrMsg)
 	}
 	return winner, nil
 }

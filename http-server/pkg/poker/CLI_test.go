@@ -101,6 +101,7 @@ func (s *SpyGame) Start(numberOfPlayer int, alertDestination io.Writer) {
 }
 
 func (s *SpyGame) Finish(winner string) {
+	s.FinishCalled = true
 	s.FinishedWith = winner
 }
 
