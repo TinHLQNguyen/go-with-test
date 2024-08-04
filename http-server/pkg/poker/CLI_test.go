@@ -91,6 +91,7 @@ func assertScheduledAlert(t testing.TB, got, want scheduledAlert) {
 type SpyGame struct {
 	StartedWith  int
 	StartCalled  bool
+	BlindAlerts  []byte
 	FinishedWith string
 	FinishCalled bool
 }
@@ -98,6 +99,7 @@ type SpyGame struct {
 func (s *SpyGame) Start(numberOfPlayer int, alertDestination io.Writer) {
 	s.StartCalled = true
 	s.StartedWith = numberOfPlayer
+	alertDestination.Write(s.BlindAlerts)
 }
 
 func (s *SpyGame) Finish(winner string) {

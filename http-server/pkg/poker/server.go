@@ -3,7 +3,7 @@ package poker
 import (
 	"encoding/json"
 	"fmt"
-	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -93,17 +93,47 @@ func (p *PlayerServer) gameHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
-	conn, _ := wsUpgrader.Upgrade(w, r, nil)
+	ws := newPlayerServerWS(w, r)
 
-	_, numOfPlayerMsg, _ := conn.ReadMessage()
+	numOfPlayerMsg := ws.WaitForMsg()
 	numOfPlayer, _ := strconv.Atoi(string(numOfPlayerMsg))
-	p.game.Start(numOfPlayer, io.Discard) // TODO: display blind msg on brower
+	p.game.Start(numOfPlayer, ws)
 
-	_, winnerMsg, _ := conn.ReadMessage()
-	p.game.Finish(string(winnerMsg))
+	winner := ws.WaitForMsg()
+	p.game.Finish(string(winner))
 }
 
 var wsUpgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+}
+
+// b/c what's needed is only a portion of websocket, we encapsulate what we need
+type playerServerWS struct {
+	*websocket.Conn
+}
+
+func newPlayerServerWS(w http.ResponseWriter, r *http.Request) *playerServerWS {
+	conn, err := wsUpgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("problem upgrading connection to websocket %v\n", err)
+	}
+	return &playerServerWS{conn}
+}
+
+func (w *playerServerWS) WaitForMsg() string {
+	_, msg, err := w.ReadMessage()
+	if err != nil {
+		log.Printf("error reading from websocket %v\n", err)
+	}
+	return string(msg)
+}
+
+// with Write(p []byte) (n int, err error), ws implemented io.Writer interface
+func (w *playerServerWS) Write(p []byte) (n int, err error) {
+	err = w.WriteMessage(websocket.TextMessage, p)
+	if err != nil {
+		return 0, err
+	}
+	return len(p), nil
 }
