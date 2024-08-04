@@ -112,15 +112,33 @@ func userSends(inputs ...string) *strings.Reader {
 }
 
 func assertGameStartedWith(t testing.TB, game *SpyGame, numberOfPlayer int) {
-	if game.StartedWith != numberOfPlayer {
+	t.Helper()
+	passed := retryUntil(500*time.Millisecond, func() bool {
+		return game.StartedWith == numberOfPlayer
+	})
+	if !passed {
 		t.Errorf("wanted game to start with %d, got %d", numberOfPlayer, game.StartedWith)
 	}
 }
 
 func assertGameFinishedWith(t testing.TB, game *SpyGame, winner string) {
-	if game.FinishedWith != winner {
+	t.Helper()
+	passed := retryUntil(500*time.Millisecond, func() bool {
+		return game.FinishedWith == winner
+	})
+	if !passed {
 		t.Errorf("wanted game to finish with %s as winner, got %s", winner, game.FinishedWith)
 	}
+}
+
+func retryUntil(d time.Duration, f func() bool) bool {
+	deadline := time.Now().Add(d)
+	for time.Now().Before(deadline) {
+		if f() {
+			return true
+		}
+	}
+	return false
 }
 
 func assertGameNotStart(t testing.TB, game *SpyGame) {

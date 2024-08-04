@@ -15,6 +15,7 @@ import (
 var (
 	dummySpyGame         = &SpyGame{}
 	dummyStubPlayerStore = &poker.StubPlayerStore{}
+	tenMSec              = 10 * time.Millisecond
 )
 
 func TestGetPlayers(t *testing.T) {
@@ -141,11 +142,11 @@ func TestGame(t *testing.T) {
 		writeWSMessage(t, ws, "7")
 		writeWSMessage(t, ws, winner)
 
-		time.Sleep(10 * time.Millisecond) // FIXME: random sleep delay to make sure ws could have time to read and RecordWin
+		time.Sleep(tenMSec)
 		assertGameStartedWith(t, game, 7)
 		assertGameFinishedWith(t, game, winner)
 
-		within(t, 10*time.Millisecond, func() {
+		within(t, tenMSec, func() {
 			assertWebsocketGotMsg(t, ws, wantedBlindAlert)
 		})
 	})
